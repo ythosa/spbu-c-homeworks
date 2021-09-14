@@ -1,0 +1,27 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install CLang 12
+        run: |
+          sudo apt update
+          sudo apt install clang-format-12 --yes
+      - name: Run CLang lint checker
+        run: |
+          find . -path ./cmake-build-debug -prune -o -type f -name "*.c" -print |
+          xargs clang-format-12 --style=file --dry-run -Werror
+      - name: Build with CMake
+        run: |
+          mkdir build && cd build
+          cmake ..
+          make
