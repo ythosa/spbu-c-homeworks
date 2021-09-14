@@ -5,6 +5,6 @@
 #ifndef SPBU_C_HOMEWORKS_ARRAYOPERATIONS_H
 #define SPBU_C_HOMEWORKS_ARRAYOPERATIONS_H
 
-int max(const int* array, int array_size);
+int max(const int* array, int arraySize);
 
 #endif // SPBU_C_HOMEWORKS_ARRAYOPERATIONS_H
