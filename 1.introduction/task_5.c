@@ -1,40 +1,40 @@
 #include <malloc.h>
 #include <stdio.h>
 
-int** get_spiral_for_square_matrix(int matrix_size)
+int** getSpiralForSquareMatrix(int matrixSize)
 {
-    int** spiral = calloc(matrix_size, sizeof(int*));
-    for (int i = 0; i < matrix_size; ++i) {
-        spiral[i] = calloc(matrix_size, sizeof(int));
+    int** spiral = calloc(matrixSize, sizeof(int*));
+    for (int i = 0; i < matrixSize; ++i) {
+        spiral[i] = calloc(matrixSize, sizeof(int));
     }
 
-    int fill_value = matrix_size * matrix_size;
-    int starting_row_index = 0;
-    int starting_column_index = 0;
-    int ending_row_index = matrix_size;
-    int ending_column_index = matrix_size;
+    int fillValue = matrixSize * matrixSize;
+    int startingRowIndex = 0;
+    int startingColumnIndex = 0;
+    int endingRowIndex = matrixSize;
+    int endingColumnIndex = matrixSize;
 
     int i; // iterator
-    while (starting_row_index < ending_row_index && starting_column_index < ending_column_index) {
-        for (i = ending_column_index - 1; i >= starting_column_index; i--) {
-            spiral[starting_row_index][i] = fill_value--;
+    while (startingRowIndex < endingRowIndex && startingColumnIndex < endingColumnIndex) {
+        for (i = endingColumnIndex - 1; i >= startingColumnIndex; i--) {
+            spiral[startingRowIndex][i] = fillValue--;
         }
-        starting_row_index++;
+        startingRowIndex++;
 
-        for (i = starting_row_index; i < ending_row_index; i++) {
-            spiral[i][starting_column_index] = fill_value--;
+        for (i = startingRowIndex; i < endingRowIndex; i++) {
+            spiral[i][startingColumnIndex] = fillValue--;
         }
-        starting_column_index++;
+        startingColumnIndex++;
 
-        for (i = starting_column_index; i < ending_column_index; i++) {
-            spiral[ending_row_index - 1][i] = fill_value--;
+        for (i = startingColumnIndex; i < endingColumnIndex; i++) {
+            spiral[endingRowIndex - 1][i] = fillValue--;
         }
-        ending_row_index--;
+        endingRowIndex--;
 
-        for (i = ending_row_index - 1; i >= starting_row_index; i--) {
-            spiral[i][ending_column_index - 1] = fill_value--;
+        for (i = endingRowIndex - 1; i >= startingRowIndex; i--) {
+            spiral[i][endingColumnIndex - 1] = fillValue--;
         }
-        ending_column_index--;
+        endingColumnIndex--;
     }
 
     return spiral;
@@ -54,7 +54,7 @@ int main()
         return -1;
     }
 
-    int** spiral = get_spiral_for_square_matrix(n);
+    int** spiral = getSpiralForSquareMatrix(n);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             printf("%d ", spiral[i][j]);
