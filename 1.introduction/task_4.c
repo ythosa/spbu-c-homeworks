@@ -2,20 +2,20 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-bool* calculate_eratosthenes_sieve(int max_n)
+bool* calculateEratosthenesSieve(int maxN)
 {
-    bool* sieve = calloc(max_n + 1, sizeof(bool));
+    bool* sieve = calloc(maxN + 1, sizeof(bool));
 
-    for (int i = 0; i <= max_n; i++) {
+    for (int i = 0; i <= maxN; i++) {
         sieve[i] = true;
     }
 
-    for (int i = 2; i * i <= max_n; i++) {
+    for (int i = 2; i * i <= maxN; i++) {
         if (!sieve[i]) {
             continue;
         }
 
-        for (int j = i * i; j <= max_n; j += i) {
+        for (int j = i * i; j <= maxN; j += i) {
             sieve[j] = false;
         }
     }
@@ -27,13 +27,13 @@ int main()
 {
     setbuf(stdout, 0);
 
-    int max_n;
+    int maxN;
     printf("Input max N:");
-    scanf("%d", &max_n);
+    scanf("%d", &maxN);
 
-    bool* sieve = calculate_eratosthenes_sieve(max_n);
+    bool* sieve = calculateEratosthenesSieve(maxN);
     printf("Prime numbers <= N: ");
-    for (int i = 2; i <= max_n; i++) {
+    for (int i = 2; i <= maxN; i++) {
         if (sieve[i]) {
             printf("%d ", i);
         }
