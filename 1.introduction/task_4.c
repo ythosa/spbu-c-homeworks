@@ -2,10 +2,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-bool* calculateEratosthenesSieve(int maxN)
+void calculateEratosthenesSieve(int maxN, bool* sieve)
 {
-    bool* sieve = calloc(maxN + 1, sizeof(bool));
-
     for (int i = 0; i <= maxN; i++) {
         sieve[i] = true;
     }
@@ -25,13 +23,12 @@ bool* calculateEratosthenesSieve(int maxN)
 
 int main()
 {
-    setbuf(stdout, 0);
-
-    int maxN;
+    int maxN = 0;
     printf("Input max N:");
     scanf("%d", &maxN);
 
-    bool* sieve = calculateEratosthenesSieve(maxN);
+    bool* sieve = calloc(maxN + 1, sizeof(bool));
+    calculateEratosthenesSieve(maxN, sieve);
     printf("Prime numbers <= N: ");
     for (int i = 2; i <= maxN; i++) {
         if (sieve[i]) {
