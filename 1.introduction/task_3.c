@@ -3,9 +3,8 @@
 
 void reverseArray(int firstIndex, int size, int* array)
 {
-    int temp;
     for (int i = 0; i < size / 2; i++) {
-        temp = array[size - i - 1 + firstIndex];
+        int temp = array[size - i - 1 + firstIndex];
         array[size - i - 1 + firstIndex] = array[i + firstIndex];
         array[i + firstIndex] = temp;
     }
