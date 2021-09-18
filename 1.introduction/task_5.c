@@ -50,7 +50,7 @@ int main()
     for (int i = 0; i < matrixSize; ++i) {
         matrix[i] = calloc(matrixSize, sizeof(int));
     }
-    getSpiralForSquareMatrix(matrixSize);
+    getSpiralForSquareMatrix(matrixSize, matrix);
 
     for (int i = 0; i < matrixSize; i++) {
         for (int j = 0; j < matrixSize; j++) {
