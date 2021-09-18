@@ -2,30 +2,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void calculateIncompleteQuotient(int dividend, int divisor, int* quotient, int* reminder)
+int calculateIncompleteQuotientForPositiveIntegers(int dividend, int divisor) {
+    int quotient = 0;
+    while (dividend >= divisor) {
+        dividend -= divisor;
+        ++quotient;
+    }
+
+    return quotient;
+}
+
+int calculateIncompleteQuotient(int dividend, int divisor)
 {
-    *quotient = 0;
-    *reminder = 0;
+    int result = calculateIncompleteQuotientForPositiveIntegers(abs(dividend), abs(divisor));
 
-    short sign = (dividend < 0 ^ divisor < 0) ? -1 : 1;
-    int dividendAbs = abs(dividend);
-    int divisorAbs = abs(divisor);
-
-    while (dividendAbs >= divisorAbs) {
-        dividendAbs -= divisorAbs;
-        *quotient += 1;
+    if (dividend < 0) {
+        result = -result - 1;
     }
 
-    if (dividend > 0) {
-        *reminder = dividend - *quotient * divisorAbs;
-        *quotient = *quotient * sign;
-
-        return;
+    if (divisor < 0) {
+        result = -result;
     }
 
-    int quotientForReminder = -*quotient - 1;
-    *reminder = dividend - divisor * quotientForReminder;
-    *quotient = abs(quotientForReminder) * sign;
+    return result;
 }
 
 bool getDividendAndDivisor(int* dividend, int* divisor)
@@ -49,14 +48,13 @@ int main()
     int dividend = 0;
     int divisor = 0;
     if (!getDividendAndDivisor(&dividend, &divisor)) {
-        return -1;
+        printf("The program failed with an error");
+
+        return 0;
     }
 
-    int quotient = 0;
-    int reminder = 0;
-    calculateIncompleteQuotient(dividend, divisor, &quotient, &reminder);
-
-    printf("Results:\n\tquotient: %d\n\treminder: %d\n", quotient, reminder);
+    int quotient = calculateIncompleteQuotient(dividend, divisor);
+    printf("Results:\n\tincomplete quotient: %d", quotient);
 
     return 0;
 }
