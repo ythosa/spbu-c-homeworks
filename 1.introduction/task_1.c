@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int calculateIncompleteQuotientForPositiveIntegers(int dividend, int divisor) {
+int calculateIncompleteQuotientForPositiveIntegers(int dividend, int divisor)
+{
     int quotient = 0;
     while (dividend >= divisor) {
         dividend -= divisor;
