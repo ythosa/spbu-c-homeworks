@@ -2,22 +2,27 @@
 #include <malloc.h>
 #include <stdio.h>
 
-int findMaxElementOccurringMoreThanOnce(const int* array, int arraySize)
+int findIndexOfMaxElementOccurringMoreThanOnce(const int* array, int arraySize)
 {
-    int* occurredTimes = calloc(arraySize, max(array, arraySize) * sizeof(int));
+    int* occurredTimes = calloc(arraySize, maxInArray(array, arraySize) * sizeof(int));
+    for (int i = 0; i < arraySize; i++) {
+        occurredTimes[array[i]] = 0;
+    }
 
     for (int i = 0; i < arraySize; i++) {
         occurredTimes[array[i]] += 1;
     }
 
-    int m = 0;
+    int maxElement = 0;
+    int indexOfMaxElement = -1;
     for (int i = 0; i < arraySize; i++) {
-        if (array[i] > m && occurredTimes[array[i]] > 1) {
-            m = array[i];
+        if (array[i] > maxElement && occurredTimes[array[i]] > 1) {
+            maxElement = array[i];
+            indexOfMaxElement = i;
         }
     }
 
-    return m;
+    return indexOfMaxElement;
 }
 
 int main()
@@ -32,8 +37,14 @@ int main()
         scanf("%d", &array[i]);
     }
 
-    int m = findMaxElementOccurringMoreThanOnce(array, arraySize);
-    printf("Maximum element occurring more than once is %d", m);
+    int indexOfMaxElement = findIndexOfMaxElementOccurringMoreThanOnce(array, arraySize);
+    if (indexOfMaxElement < 0) {
+        printf("There are no elements that occur more than once");
+
+        return 0;
+    }
+
+    printf("Maximum element occurring more than once is %d", array[indexOfMaxElement]);
 
     free(array);
 }
