@@ -1,71 +1,68 @@
 #include <malloc.h>
 #include <stdio.h>
 
-int** getSpiralForSquareMatrix(int matrixSize)
+int** getSpiralForSquareMatrix(int matrixSize, int** matrix)
 {
-    int** spiral = calloc(matrixSize, sizeof(int*));
-    for (int i = 0; i < matrixSize; ++i) {
-        spiral[i] = calloc(matrixSize, sizeof(int));
-    }
-
     int fillValue = matrixSize * matrixSize;
     int startingRowIndex = 0;
     int startingColumnIndex = 0;
     int endingRowIndex = matrixSize;
     int endingColumnIndex = matrixSize;
 
-    int i; // iterator
     while (startingRowIndex < endingRowIndex && startingColumnIndex < endingColumnIndex) {
-        for (i = endingColumnIndex - 1; i >= startingColumnIndex; i--) {
-            spiral[startingRowIndex][i] = fillValue--;
+        for (int i = endingColumnIndex - 1; i >= startingColumnIndex; i--) {
+            matrix[startingRowIndex][i] = fillValue--;
         }
         startingRowIndex++;
 
-        for (i = startingRowIndex; i < endingRowIndex; i++) {
-            spiral[i][startingColumnIndex] = fillValue--;
+        for (int i = startingRowIndex; i < endingRowIndex; i++) {
+            matrix[i][startingColumnIndex] = fillValue--;
         }
         startingColumnIndex++;
 
-        for (i = startingColumnIndex; i < endingColumnIndex; i++) {
-            spiral[endingRowIndex - 1][i] = fillValue--;
+        for (int i = startingColumnIndex; i < endingColumnIndex; i++) {
+            matrix[endingRowIndex - 1][i] = fillValue--;
         }
         endingRowIndex--;
 
-        for (i = endingRowIndex - 1; i >= startingRowIndex; i--) {
-            spiral[i][endingColumnIndex - 1] = fillValue--;
+        for (int i = endingRowIndex - 1; i >= startingRowIndex; i--) {
+            matrix[i][endingColumnIndex - 1] = fillValue--;
         }
         endingColumnIndex--;
     }
 
-    return spiral;
+    return matrix;
 }
 
 int main()
 {
-    setbuf(stdout, 0);
+    int matrixSize = 0;
+    printf("Input N (a natural number that is a multiple of two):");
+    scanf("%d", &matrixSize);
 
-    int n;
-    printf("Input N (N mod 2 != 0, N > 0):");
-    scanf("%d", &n);
-
-    if (n % 2 == 0 || n <= 0) {
+    if (matrixSize % 2 == 0 || matrixSize <= 0) {
         printf("Error: invalid N");
 
-        return -1;
+        return 0;
     }
 
-    int** spiral = getSpiralForSquareMatrix(n);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            printf("%d ", spiral[i][j]);
+    int** matrix = calloc(matrixSize, sizeof(int*));
+    for (int i = 0; i < matrixSize; ++i) {
+        matrix[i] = calloc(matrixSize, sizeof(int));
+    }
+    getSpiralForSquareMatrix(matrixSize);
+
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+            printf("%d ", matrix[i][j]);
         }
         printf("\n");
     }
 
-    for (int i = 0; i < n; i++) {
-        free(spiral[i]);
+    for (int i = 0; i < matrixSize; i++) {
+        free(matrix[i]);
     }
-    free(spiral);
+    free(matrix);
 
     return 0;
 }
