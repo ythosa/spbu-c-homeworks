@@ -1,12 +1,12 @@
 #include "../library/commonUtils/arrayOperations.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int findIndexOfMaxElementOccurringMoreThanOnce(int* array, int arraySize)
 {
     quickSort(array, 0, arraySize - 1);
 
-    for (int i = arraySize; i > 0; i--) {
+    for (int i = arraySize - 1; i > 0; i--) {
         if (array[i] == array[i - 1]) {
             return i;
         }
