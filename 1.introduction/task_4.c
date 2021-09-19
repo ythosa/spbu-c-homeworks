@@ -1,6 +1,6 @@
-#include <malloc.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void calculateEratosthenesSieve(int maxN, bool* sieve)
 {
@@ -17,8 +17,6 @@ void calculateEratosthenesSieve(int maxN, bool* sieve)
             sieve[j] = false;
         }
     }
-
-    return sieve;
 }
 
 int main()
