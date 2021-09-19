@@ -1,5 +1,5 @@
-#include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void reverseArray(int firstIndex, int size, int* array)
 {
