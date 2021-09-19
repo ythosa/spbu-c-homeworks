@@ -1,5 +1,5 @@
-#include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int** getSpiralForSquareMatrix(int matrixSize, int** matrix)
 {
