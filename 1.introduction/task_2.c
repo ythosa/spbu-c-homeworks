@@ -1,28 +1,18 @@
 #include "../library/commonUtils/arrayOperations.h"
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdio.h>
 
-int findIndexOfMaxElementOccurringMoreThanOnce(const int* array, int arraySize)
+int findIndexOfMaxElementOccurringMoreThanOnce(int* array, int arraySize)
 {
-    int* occurredTimes = calloc(arraySize, maxInArray(array, arraySize) * sizeof(int));
-    for (int i = 0; i < arraySize; i++) {
-        occurredTimes[array[i]] = 0;
-    }
+    quickSort(array, 0, arraySize - 1);
 
-    for (int i = 0; i < arraySize; i++) {
-        occurredTimes[array[i]] += 1;
-    }
-
-    int maxElement = 0;
-    int indexOfMaxElement = -1;
-    for (int i = 0; i < arraySize; i++) {
-        if (array[i] > maxElement && occurredTimes[array[i]] > 1) {
-            maxElement = array[i];
-            indexOfMaxElement = i;
+    for (int i = arraySize; i > 0; i--) {
+        if (array[i] == array[i - 1]) {
+            return i;
         }
     }
 
-    return indexOfMaxElement;
+    return -1;
 }
 
 int main()
