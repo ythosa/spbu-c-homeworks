@@ -1,2 +1,2 @@
-# C programming
-homework assignments for the C programming course in SPBU
+# C Programming
+Saint Petersburg State University "C Programming Course" Homeworks
