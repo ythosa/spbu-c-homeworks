@@ -4,6 +4,18 @@
 #ifndef SPBU_C_HOMEWORKS_HASHTABLE_H
 #define SPBU_C_HOMEWORKS_HASHTABLE_H
 
+typedef struct element {
+    struct element* next;
+    String key;
+    void* value;
+} element_t;
+
+typedef struct dict {
+    int buffer; // buffer of the pointer table
+    int size; // number of elements stored
+    element_t** table;
+} dict_t;
+
 typedef struct dict* Dict;
 
 /* create a new empty dictionary */
@@ -24,6 +36,6 @@ void* dictGet(Dict d, String key);
 void dictDelete(Dict d, String key);
 
 /* prints dictionary into std output */
-void dictPrint(Dict d, FILE* dst);
+void dictIntPrint(Dict d, FILE* dst);
 
 #endif // SPBU_C_HOMEWORKS_HASHTABLE_H

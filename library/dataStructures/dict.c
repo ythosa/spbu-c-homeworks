@@ -4,12 +4,6 @@
 
 #include "dict.h"
 
-typedef struct element {
-    struct element* next;
-    String key;
-    void* value;
-} element_t;
-
 element_t* elementCreate(element_t* next, String key, void* value)
 {
     element_t* node = malloc(sizeof(element_t));
@@ -26,12 +20,6 @@ void elementFree(element_t* node)
     free(node->value);
     free(node);
 }
-
-typedef struct dict {
-    int buffer; /* buffer of the pointer table */
-    int size; /* number of elements stored */
-    element_t** table;
-} dict_t;
 
 #define INITIAL_SIZE (1024)
 #define GROWTH_FACTOR (2)
@@ -169,12 +157,12 @@ void dictDelete(Dict d, String key)
     }
 }
 
-void dictPrint(Dict d, FILE* dst)
+void dictIntPrint(Dict d, FILE* dst)
 {
     for (int i = 0; i < d->buffer; i++) {
         for (element_t* e = d->table[i]; e != NULL; e = e->next) {
             fprintf(dst, "key: ");
-            stringPrint(e->key, stdout);
+            stringPrint(e->key, dst);
             fprintf(dst, " value: %d\n", *(int*)e->value);
         }
     }
