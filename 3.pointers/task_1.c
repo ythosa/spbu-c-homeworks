@@ -4,9 +4,11 @@
 #include "../lib/dataStructures/dict.h"
 #include "../lib/io/csv.h"
 
+#define MAX_WORD_LENGTH 128
+
 void readWordsToDict(FILE* inputStream, Dict words)
 {
-    char buffer[128] = "";
+    char buffer[MAX_WORD_LENGTH] = "";
     while (fscanf(inputStream, "%s", buffer) != EOF) {
         String key = stringDup(buffer);
         int* value = (int*)dictGet(words, key);
