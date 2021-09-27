@@ -1,4 +1,4 @@
-#include "../library/commonUtils/arrayOperations.h"
+#include "../lib/commonUtils/arrayOperations.h"
 #include <stdio.h>
 #include <stdlib.h>
 

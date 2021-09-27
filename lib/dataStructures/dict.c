@@ -25,7 +25,6 @@ void elementFree(element_t* node, void (*freeDictValue)(void*))
 #define GROWTH_FACTOR (2)
 #define MAX_LOAD_FACTOR (1)
 
-/* dictionary initialization code used in both dictCreate and grow */
 Dict internalDictCreate(int size, void (*freeDictValue)(void*))
 {
     Dict d = malloc(sizeof(dict_t));
@@ -61,13 +60,6 @@ void dictFree(Dict d, void (*freeDictValue)(void*))
     free(d);
 }
 
-void swapDicts(Dict first, Dict second)
-{
-    dict_t temp = *first;
-    *first = *second;
-    *second = temp;
-}
-
 #define MULTIPLIER (97)
 
 static unsigned long hashFunction(String string)
@@ -80,6 +72,13 @@ static unsigned long hashFunction(String string)
     }
 
     return hash;
+}
+
+void swapDicts(Dict first, Dict second)
+{
+    dict_t temp = *first;
+    *first = *second;
+    *second = temp;
 }
 
 static void grow(Dict d)
