@@ -4,18 +4,18 @@ project(spbu_c_homeworks C)
 set(CMAKE_C_STANDARD 11)
 
 add_library(commonUtils
-        library/commonUtils/numericOperations.c
-        library/commonUtils/arrayOperations.c
+        lib/commonUtils/numericOperations.c
+        lib/commonUtils/arrayOperations.c
         )
 
 add_library(dataStructures
-        library/dataStructures/string.c
-        library/dataStructures/list.c
-        library/dataStructures/dict.c
+        lib/dataStructures/string.c
+        lib/dataStructures/list.c
+        lib/dataStructures/dict.c
         )
 
 add_library(io
-        library/io/csv.c
+        lib/io/csv.c
         )
 
 add_executable(task_1.1 ./1.introduction/task_1.c)
