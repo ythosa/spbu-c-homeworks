@@ -1,67 +1,70 @@
-#include <stdlib.h>
+#include "string.h"
 #include <assert.h>
-#include <string.h>
+#include <stdlib.h>
 
 #include "dict.h"
 
-struct elt {
-    struct elt *next;
-    char *key;
-    char *value;
-};
+typedef struct element {
+    struct element* next;
+    String key;
+    String value;
+} element_t;
 
-struct dict {
-    int size;           /* size of the pointer table */
-    int n;              /* number of elements stored */
-    struct elt **table;
-};
+element_t* nodeCreate(element_t* next, String key, String value)
+{
+    element_t* node = malloc(sizeof(element_t));
+    node->next = next;
+    node->key = key;
+    node->value = value;
+
+    return node;
+}
+
+void nodeFree(element_t* node)
+{
+    stringFree(node->key);
+    stringFree(node->value);
+    free(node);
+}
+
+typedef struct dict {
+    int buffer; /* buffer of the pointer table */
+    int size; /* number of element_t stored */
+    element_t** table;
+} dict_t;
 
 #define INITIAL_SIZE (1024)
 #define GROWTH_FACTOR (2)
 #define MAX_LOAD_FACTOR (1)
 
-/* dictionary initialization code used in both DictCreate and grow */
-Dict
-internalDictCreate(int size)
+/* dictionary initialization code used in both dictCreate and grow */
+Dict internalDictCreate(int size)
 {
-    Dict d;
-    int i;
+    Dict d = malloc(sizeof(dict_t));
+    d->buffer = size;
+    d->size = 0;
+    d->table = malloc(d->buffer * sizeof(element_t*));
 
-    d = malloc(sizeof(*d));
-
-    assert(d != 0);
-
-    d->size = size;
-    d->n = 0;
-    d->table = malloc(sizeof(struct elt *) * d->size);
-
-    assert(d->table != 0);
-
-    for(i = 0; i < d->size; i++) d->table[i] = 0;
+    for (int i = 0; i < d->buffer; i++) {
+        d->table[i] = 0;
+    }
 
     return d;
 }
 
-Dict
-DictCreate(void)
+Dict dictCreate(void)
 {
     return internalDictCreate(INITIAL_SIZE);
 }
 
-void
-DictDestroy(Dict d)
+void dictFree(Dict d)
 {
-    int i;
-    struct elt *e;
-    struct elt *next;
+    element_t* next = NULL;
 
-    for(i = 0; i < d->size; i++) {
-        for(e = d->table[i]; e != 0; e = next) {
-            next = e->next;
-
-            free(e->key);
-            free(e->value);
-            free(e);
+    for (int i = 0; i < d->buffer; i++) {
+        for (element_t* node = d->table[i]; node != 0; node = next) {
+            next = node->next;
+            nodeFree(node);
         }
     }
 
@@ -69,119 +72,85 @@ DictDestroy(Dict d)
     free(d);
 }
 
-#define MULTIPLIER (97)
-
-static unsigned long
-hash_function(const char *s)
+void swapDicts(Dict first, Dict second)
 {
-    unsigned const char *us;
-    unsigned long h;
-
-    h = 0;
-
-    for(us = (unsigned const char *) s; *us; us++) {
-        h = h * MULTIPLIER + *us;
-    }
-
-    return h;
+    dict_t temp = *first;
+    *first = *second;
+    *second = temp;
 }
 
-static void
-grow(Dict d)
+#define MULTIPLIER (97)
+
+static unsigned long hashFunction(const char* s)
 {
-    Dict d2;            /* new dictionary we'll create */
-    struct dict swap;   /* temporary structure for brain transplant */
-    int i;
-    struct elt *e;
+    unsigned long hash = 0;
 
-    d2 = internalDictCreate(d->size * GROWTH_FACTOR);
-
-    for(i = 0; i < d->size; i++) {
-        for(e = d->table[i]; e != 0; e = e->next) {
-            /* note: this recopies everything */
-            /* a more efficient implementation would
-             * patch out the strdups inside DictInsert
-             * to avoid this problem */
-            DictInsert(d2, e->key, e->value);
-        }
+    for (unsigned const char* us = (unsigned const char*)s; *us; us++) {
+        hash = hash * MULTIPLIER + *us;
     }
 
-    /* the hideous part */
-    /* We'll swap the guts of d and d2 */
-    /* then call DictDestroy on d2 */
-    swap = *d;
-    *d = *d2;
-    *d2 = swap;
+    return hash;
+}
 
-    DictDestroy(d2);
+static void grow(Dict d)
+{
+    Dict newDict = internalDictCreate(d->buffer * GROWTH_FACTOR);
+
+    for (int i = 0; i < d->buffer; i++) {
+        for (element_t* e = d->table[i]; e != 0; e = e->next) {
+            dictPut(newDict, e->key, e->value);
+        }
+    }
+    swapDicts(d, newDict);
+
+    dictFree(newDict);
 }
 
 /* insert a new key-value pair into an existing dictionary */
-void
-DictInsert(Dict d, const char *key, const char *value)
+void dictPut(Dict d, String key, String value)
 {
-    struct elt *e;
-    unsigned long h;
-
     assert(key);
     assert(value);
 
-    e = malloc(sizeof(*e));
+    unsigned long h = hashFunction(stringToC(key)) % d->buffer;
 
-    assert(e);
-
-    e->key = strdup(key);
-    e->value = strdup(value);
-
-    h = hash_function(key) % d->size;
-
-    e->next = d->table[h];
+    element_t* e = nodeCreate(d->table[h], key, value);
     d->table[h] = e;
-
-    d->n++;
+    d->size++;
 
     /* grow table if there is not enough room */
-    if(d->n >= d->size * MAX_LOAD_FACTOR) {
+    if (d->size >= d->buffer * MAX_LOAD_FACTOR) {
         grow(d);
     }
 }
 
 /* return the most recently inserted value associated with a key */
 /* or 0 if no matching key is present */
-const char *
-DictSearch(Dict d, const char *key)
+String dictGet(Dict d, String key)
 {
-    struct elt *e;
-
-    for(e = d->table[hash_function(key) % d->size]; e != 0; e = e->next) {
-        if(!strcmp(e->key, key)) {
-            /* got it */
+    for (element_t* e = d->table[hashFunction(stringToC(key)) % d->buffer]; e; e = e->next) {
+        if (!stringCompare(e->key, key)) {
             return e->value;
         }
     }
 
-    return 0;
+    return NULL;
 }
 
 /* delete the most recently inserted record with the given key */
 /* if there is no such record, has no effect */
-void
-DictDelete(Dict d, const char *key)
+void dictDelete(Dict d, String key)
 {
-    struct elt **prev;          /* what to change when elt is deleted */
-    struct elt *e;              /* what to delete */
+    element_t* nodeToDelete = NULL;
 
-    for(prev = &(d->table[hash_function(key) % d->size]);
+    for (element_t** prev = &(d->table[hashFunction(stringToC(key)) % d->buffer]);
          *prev != 0;
          prev = &((*prev)->next)) {
-        if(!strcmp((*prev)->key, key)) {
-            /* got it */
-            e = *prev;
-            *prev = e->next;
 
-            free(e->key);
-            free(e->value);
-            free(e);
+        if (!stringCompare((*prev)->key, key)) {
+            nodeToDelete = *prev;
+            *prev = nodeToDelete->next;
+            nodeFree(nodeToDelete);
 
             return;
         }
