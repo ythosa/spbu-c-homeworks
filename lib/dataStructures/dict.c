@@ -95,7 +95,6 @@ static void grow(Dict d)
     dictFree(newDict, d->freeDictValue);
 }
 
-/* insert a new key-value pair into an existing dictionary */
 void dictPut(Dict d, String key, void* value)
 {
     assert(key);
@@ -118,14 +117,11 @@ void dictPut(Dict d, String key, void* value)
         d->size++;
     }
 
-    /* grow table if there is not enough room */
     if (d->size >= d->buffer * MAX_LOAD_FACTOR) {
         grow(d);
     }
 }
 
-/* return the most recently inserted value associated with a key */
-/* or 0 if no matching key is present */
 void* dictGet(Dict d, String key)
 {
     for (element_t* e = d->table[hashFunction(key) % d->buffer]; e; e = e->next) {
@@ -137,8 +133,6 @@ void* dictGet(Dict d, String key)
     return NULL;
 }
 
-/* delete the most recently inserted record with the given key */
-/* if there is no such record, has no effect */
 void dictDelete(Dict d, String key)
 {
     element_t* nodeToDelete = NULL;
