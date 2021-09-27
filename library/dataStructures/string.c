@@ -58,6 +58,16 @@ str_t* stringConcat(String left, String right)
     return result;
 }
 
+String stringPushChar(String s, char c)
+{
+    String result = stringCreate(s->length + 1);
+    memcpy(result->data, s->data, s->length);
+    strncat((char*)result->data, &c, 1);
+    result->capacity = result->length;
+
+    return result;
+}
+
 uint8_t stringGetByIndex(String s, uint8_t index)
 {
     return s->data[index];

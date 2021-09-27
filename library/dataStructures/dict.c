@@ -7,10 +7,10 @@
 typedef struct element {
     struct element* next;
     String key;
-    String value;
+    void* value;
 } element_t;
 
-element_t* nodeCreate(element_t* next, String key, String value)
+element_t* elementCreate(element_t* next, String key, void* value)
 {
     element_t* node = malloc(sizeof(element_t));
     node->next = next;
@@ -20,16 +20,16 @@ element_t* nodeCreate(element_t* next, String key, String value)
     return node;
 }
 
-void nodeFree(element_t* node)
+void elementFree(element_t* node)
 {
     stringFree(node->key);
-    stringFree(node->value);
+    free(node->value);
     free(node);
 }
 
 typedef struct dict {
     int buffer; /* buffer of the pointer table */
-    int size; /* number of element_t stored */
+    int size; /* number of elements stored */
     element_t** table;
 } dict_t;
 
@@ -46,7 +46,7 @@ Dict internalDictCreate(int size)
     d->table = malloc(d->buffer * sizeof(element_t*));
 
     for (int i = 0; i < d->buffer; i++) {
-        d->table[i] = 0;
+        d->table[i] = NULL;
     }
 
     return d;
@@ -62,9 +62,9 @@ void dictFree(Dict d)
     element_t* next = NULL;
 
     for (int i = 0; i < d->buffer; i++) {
-        for (element_t* node = d->table[i]; node != 0; node = next) {
+        for (element_t* node = d->table[i]; node != NULL; node = next) {
             next = node->next;
-            nodeFree(node);
+            elementFree(node);
         }
     }
 
@@ -107,16 +107,27 @@ static void grow(Dict d)
 }
 
 /* insert a new key-value pair into an existing dictionary */
-void dictPut(Dict d, String key, String value)
+void dictPut(Dict d, String key, void* value)
 {
     assert(key);
     assert(value);
 
     unsigned long h = hashFunction(stringToC(key)) % d->buffer;
 
-    element_t* e = nodeCreate(d->table[h], key, value);
-    d->table[h] = e;
-    d->size++;
+    bool isElementWithSuchKeyExists = false;
+    for (element_t* e = d->table[h]; e != NULL; e = e->next) {
+        if (stringCompare(e->key, key) == 0) {
+            e->value = value;
+            isElementWithSuchKeyExists = true;
+            break;
+        }
+    }
+
+    if (!isElementWithSuchKeyExists) {
+        element_t* e = elementCreate(d->table[h], key, value);
+        d->table[h] = e;
+        d->size++;
+    }
 
     /* grow table if there is not enough room */
     if (d->size >= d->buffer * MAX_LOAD_FACTOR) {
@@ -126,7 +137,7 @@ void dictPut(Dict d, String key, String value)
 
 /* return the most recently inserted value associated with a key */
 /* or 0 if no matching key is present */
-String dictGet(Dict d, String key)
+void* dictGet(Dict d, String key)
 {
     for (element_t* e = d->table[hashFunction(stringToC(key)) % d->buffer]; e; e = e->next) {
         if (!stringCompare(e->key, key)) {
@@ -143,16 +154,28 @@ void dictDelete(Dict d, String key)
 {
     element_t* nodeToDelete = NULL;
 
-    for (element_t** prev = &(d->table[hashFunction(stringToC(key)) % d->buffer]);
-         *prev != 0;
-         prev = &((*prev)->next)) {
+    for (
+        element_t** prev = &(d->table[hashFunction(stringToC(key)) % d->buffer]);
+        *prev != NULL;
+        prev = &((*prev)->next)) {
 
         if (!stringCompare((*prev)->key, key)) {
             nodeToDelete = *prev;
             *prev = nodeToDelete->next;
-            nodeFree(nodeToDelete);
+            elementFree(nodeToDelete);
 
             return;
+        }
+    }
+}
+
+void dictPrint(Dict d, FILE* dst)
+{
+    for (int i = 0; i < d->buffer; i++) {
+        for (element_t* e = d->table[i]; e != NULL; e = e->next) {
+            fprintf(dst, "key: ");
+            stringPrint(e->key, stdout);
+            fprintf(dst, " value: %d\n", *(int*)e->value);
         }
     }
 }

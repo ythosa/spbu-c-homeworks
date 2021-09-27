@@ -12,6 +12,7 @@ void stringFree(String s);
 uint8_t stringLength(String s);
 void stringPrint(String s, FILE* dst);
 String stringDup(const char* from);
+String stringPushChar(String s, char c);
 char* stringToC(String s);
 String stringConcat(String left, String right);
 uint8_t stringGetByIndex(String s, uint8_t index);

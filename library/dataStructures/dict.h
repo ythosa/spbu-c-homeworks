@@ -13,14 +13,17 @@ Dict dictCreate(void);
 void dictFree(Dict d);
 
 /* insert a new key-value pair into an existing dictionary */
-void dictPut(Dict d, String key, String value);
+void dictPut(Dict d, String key, void* value);
 
 /* return the most recently inserted value associated with a key */
 /* or NULL if no matching key is present */
-String dictGet(Dict d, String key);
+void* dictGet(Dict d, String key);
 
 /* delete the most recently inserted record with the given key */
 /* if there is no such record, has no effect */
 void dictDelete(Dict d, String key);
+
+/* prints dictionary into std output */
+void dictPrint(Dict d, FILE* dst);
 
 #endif // SPBU_C_HOMEWORKS_HASHTABLE_H
