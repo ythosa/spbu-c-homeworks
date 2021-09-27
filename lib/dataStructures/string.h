@@ -6,18 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct string {
-    uint8_t* data;
-    uint8_t length;
-    uint8_t capacity;
-} str_t;
-
 typedef struct string* String;
 
 void stringFree(String s);
 uint8_t stringLength(String s);
 void stringPrint(String s, FILE* dst);
 String stringDup(const char* from);
+uint8_t* stringC(String s);
 String stringPushChar(String s, char c);
 String stringConcat(String left, String right);
 uint8_t stringGetByIndex(String s, uint8_t index);

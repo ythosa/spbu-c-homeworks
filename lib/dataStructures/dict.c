@@ -72,7 +72,7 @@ void swapDicts(Dict first, Dict second)
 
 static unsigned long hashFunction(String string)
 {
-    uint8_t* s = string->data;
+    uint8_t* s = stringC(string);
     unsigned long hash = 0;
 
     for (unsigned const char* us = (unsigned const char*)s; *us; us++) {
