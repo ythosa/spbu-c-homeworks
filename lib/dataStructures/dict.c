@@ -14,10 +14,10 @@ element_t* elementCreate(element_t* next, String key, void* value)
     return node;
 }
 
-void elementFree(element_t* node)
+void elementFree(element_t* node, void (*freeDictValue)(void*))
 {
     stringFree(node->key);
-    free(node->value);
+    freeDictValue(node->value);
     free(node);
 }
 
@@ -26,9 +26,10 @@ void elementFree(element_t* node)
 #define MAX_LOAD_FACTOR (1)
 
 /* dictionary initialization code used in both dictCreate and grow */
-Dict internalDictCreate(int size)
+Dict internalDictCreate(int size, void (*freeDictValue)(void*))
 {
     Dict d = malloc(sizeof(dict_t));
+    d->freeDictValue = freeDictValue;
     d->buffer = size;
     d->size = 0;
     d->table = malloc(d->buffer * sizeof(element_t*));
@@ -40,19 +41,19 @@ Dict internalDictCreate(int size)
     return d;
 }
 
-Dict dictCreate(void)
+Dict dictCreate(void (*freeDictValue)(void*))
 {
-    return internalDictCreate(INITIAL_SIZE);
+    return internalDictCreate(INITIAL_SIZE, freeDictValue);
 }
 
-void dictFree(Dict d)
+void dictFree(Dict d, void (*freeDictValue)(void*))
 {
     element_t* next = NULL;
 
     for (int i = 0; i < d->buffer; i++) {
         for (element_t* node = d->table[i]; node != NULL; node = next) {
             next = node->next;
-            elementFree(node);
+            elementFree(node, freeDictValue);
         }
     }
 
@@ -69,8 +70,9 @@ void swapDicts(Dict first, Dict second)
 
 #define MULTIPLIER (97)
 
-static unsigned long hashFunction(const char* s)
+static unsigned long hashFunction(String string)
 {
+    uint8_t* s = string->data;
     unsigned long hash = 0;
 
     for (unsigned const char* us = (unsigned const char*)s; *us; us++) {
@@ -82,7 +84,7 @@ static unsigned long hashFunction(const char* s)
 
 static void grow(Dict d)
 {
-    Dict newDict = internalDictCreate(d->buffer * GROWTH_FACTOR);
+    Dict newDict = internalDictCreate(d->buffer * GROWTH_FACTOR, d->freeDictValue);
 
     for (int i = 0; i < d->buffer; i++) {
         for (element_t* e = d->table[i]; e != 0; e = e->next) {
@@ -91,7 +93,7 @@ static void grow(Dict d)
     }
     swapDicts(d, newDict);
 
-    dictFree(newDict);
+    dictFree(newDict, d->freeDictValue);
 }
 
 /* insert a new key-value pair into an existing dictionary */
@@ -100,7 +102,7 @@ void dictPut(Dict d, String key, void* value)
     assert(key);
     assert(value);
 
-    unsigned long h = hashFunction(stringToC(key)) % d->buffer;
+    unsigned long h = hashFunction(key) % d->buffer;
 
     bool isElementWithSuchKeyExists = false;
     for (element_t* e = d->table[h]; e != NULL; e = e->next) {
@@ -127,7 +129,7 @@ void dictPut(Dict d, String key, void* value)
 /* or 0 if no matching key is present */
 void* dictGet(Dict d, String key)
 {
-    for (element_t* e = d->table[hashFunction(stringToC(key)) % d->buffer]; e; e = e->next) {
+    for (element_t* e = d->table[hashFunction(key) % d->buffer]; e; e = e->next) {
         if (!stringCompare(e->key, key)) {
             return e->value;
         }
@@ -143,27 +145,31 @@ void dictDelete(Dict d, String key)
     element_t* nodeToDelete = NULL;
 
     for (
-        element_t** prev = &(d->table[hashFunction(stringToC(key)) % d->buffer]);
+        element_t** prev = &(d->table[hashFunction(key) % d->buffer]);
         *prev != NULL;
         prev = &((*prev)->next)) {
 
         if (!stringCompare((*prev)->key, key)) {
             nodeToDelete = *prev;
             *prev = nodeToDelete->next;
-            elementFree(nodeToDelete);
+            elementFree(nodeToDelete, d->freeDictValue);
 
             return;
         }
     }
 }
 
-void dictIntPrint(Dict d, FILE* dst)
+void dictPrint(Dict d, String (*valueFormatter)(void*), FILE* dst)
 {
     for (int i = 0; i < d->buffer; i++) {
         for (element_t* e = d->table[i]; e != NULL; e = e->next) {
             fprintf(dst, "key: ");
             stringPrint(e->key, dst);
-            fprintf(dst, " value: %d\n", *(int*)e->value);
+            fprintf(dst, " value: ");
+            String s = valueFormatter(e->value);
+            stringPrint(s, dst);
+            stringFree(s);
+            fprintf(dst, "\n");
         }
     }
 }

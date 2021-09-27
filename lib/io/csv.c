@@ -1,11 +1,15 @@
 #include "csv.h"
 
-void csvPrintIntDict(Dict dict, FILE* dst)
+void csvPrintDict(Dict dict, String (*dictValueFormatter)(void*), FILE* dst)
 {
     for (int i = 0; i < dict->buffer; i++) {
         for (element_t* e = dict->table[i]; e != NULL; e = e->next) {
             stringPrint(e->key, dst);
-            fprintf(dst, ";%d\n", *(int*)e->value);
+            fprintf(dst, ";");
+            String s = dictValueFormatter(e->value);
+            stringPrint(s, dst);
+            stringFree(s);
+            fprintf(dst, "\n");
         }
     }
 }

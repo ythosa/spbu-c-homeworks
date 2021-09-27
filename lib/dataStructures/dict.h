@@ -14,15 +14,16 @@ typedef struct dict {
     int buffer; // buffer of the pointer table
     int size; // number of elements stored
     element_t** table;
+    void (*freeDictValue)(void*);
 } dict_t;
 
 typedef struct dict* Dict;
 
 /* create a new empty dictionary */
-Dict dictCreate(void);
+Dict dictCreate(void (*freeDictValue)(void*));
 
 /* destroy a dictionary */
-void dictFree(Dict d);
+void dictFree(Dict d, void (*freeDictValue)(void*));
 
 /* insert a new key-value pair into an existing dictionary */
 void dictPut(Dict d, String key, void* value);
@@ -36,6 +37,6 @@ void* dictGet(Dict d, String key);
 void dictDelete(Dict d, String key);
 
 /* prints dictionary into std output */
-void dictIntPrint(Dict d, FILE* dst);
+void dictPrint(Dict d, String (*valueFormatter)(void*), FILE* dst);
 
 #endif // SPBU_C_HOMEWORKS_HASHTABLE_H

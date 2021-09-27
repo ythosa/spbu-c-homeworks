@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "../library/dataStructures/dict.h"
-#include "../library/io/csv.h"
+#include "../lib/dataStructures/dict.h"
+#include "../lib/io/csv.h"
 
 void readWordsToDict(FILE* inputStream, Dict words)
 {
@@ -19,6 +19,14 @@ void readWordsToDict(FILE* inputStream, Dict words)
             dictPut(words, key, value);
         }
     }
+}
+
+String dictValueFormatter(const int* v)
+{
+    char str[64];
+    sprintf(str, "%d", *v);
+
+    return stringDup(str);
 }
 
 int main(int argc, char* argv[])
@@ -42,17 +50,17 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    Dict words = dictCreate();
+    Dict words = dictCreate(free);
 
     FILE* inputFile = fopen(inputFilePath, "r");
     readWordsToDict(inputFile, words);
     fclose(inputFile);
 
     FILE* outputFile = fopen(outputFilePath, "w");
-    csvPrintIntDict(words, outputFile);
+    csvPrintDict(words, (String(*)(void*))dictValueFormatter, outputFile);
     fclose(outputFile);
 
-    dictFree(words);
+    dictFree(words, free);
 
     return 0;
 }

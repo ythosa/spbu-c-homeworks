@@ -17,8 +17,6 @@ typedef struct list* List;
 List listCreate();
 void listFree(List l);
 void listPushBack(List l, void* data);
-
-void listOfIntPrint(List l, FILE* dst);
-void listOfStringPrint(List l, FILE* dst);
+void listPrint(List l, String (*elementFormatter)(void*), FILE* dst);
 
 #endif // SPBU_C_HOMEWORKS_LIST_H

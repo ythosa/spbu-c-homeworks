@@ -62,20 +62,15 @@ void listPushBack(List l, void* data)
     l->tail = newNode;
 }
 
-void listOfIntPrint(List l, FILE* dst)
+void listPrint(List l, String (*elementFormatter)(void*), FILE* dst)
 {
     node_t* n = l->head;
     while (n) {
-        fprintf(dst, "%d", *(int*)n->data);
-        n = n->next;
-    }
-}
+        String s = elementFormatter(n->data);
+        stringPrint(s, dst);
+        stringFree(s);
+        fprintf(dst, " ");
 
-void listOfStringPrint(List l, FILE* dst)
-{
-    node_t* n = l->head;
-    while (n) {
-        fprintf(dst, "%s ", (char*)n->data);
         n = n->next;
     }
 }

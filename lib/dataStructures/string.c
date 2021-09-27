@@ -1,11 +1,5 @@
 #include "./string.h"
 
-typedef struct string {
-    uint8_t* data;
-    uint8_t length;
-    uint8_t capacity;
-} str_t;
-
 str_t* stringCreate(uint8_t length)
 {
     str_t* s = malloc(sizeof(str_t));
@@ -40,11 +34,6 @@ str_t* stringDup(const char* from)
     s->capacity = s->length;
 
     return s;
-}
-
-char* stringToC(String s)
-{
-    return (char*)s->data;
 }
 
 str_t* stringConcat(String left, String right)
