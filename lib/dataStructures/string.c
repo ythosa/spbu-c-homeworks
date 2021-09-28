@@ -62,8 +62,9 @@ String stringPushChar(String s, char c)
 {
     String result = stringCreate(s->length + 1);
     memcpy(result->data, s->data, s->length);
-    strncat((char*)result->data, &c, 1);
+    memcpy(result->data + s->length, &c, 1);
     result->capacity = result->length;
+    stringFree(s);
 
     return result;
 }
