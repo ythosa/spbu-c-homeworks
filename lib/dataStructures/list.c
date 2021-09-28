@@ -61,6 +61,12 @@ List listCopy(List l, void* (*copyNodeData)(void*))
     copy->size = l->size;
     copy->head = nodeCopy(l->head, copyNodeData);
 
+    node_t* n = copy->head;
+    while (n->next) {
+        n = n->next;
+    }
+    copy->tail = n;
+
     return copy;
 }
 
@@ -178,16 +184,37 @@ void listDeleteSequenceFromTo(List source, List from, List to, bool (*comparator
     nodeFree(nodeBeforeTo);
 }
 
-void listInsertSequenceAfter(List source, List from, bool (*comparator)(void*, void*), void* (*copyNodeData)(void*))
+void listInsertSequenceAfter(List source, List from, List to, bool (*comparator)(void*, void*), void* (*copyNodeData)(void*))
 {
     source->size += from->size;
 
     int indexAfterFrom = listGetIndexAfterFirstEntrance(source, from, comparator);
     node_t* nodeAfterFrom = listGetNodeByIndex(source, indexAfterFrom);
 
-    List fromCopy = listCopy(from, copyNodeData);
-    nodeAfterFrom->prev->next = fromCopy->head;
-    fromCopy->head->prev = nodeAfterFrom->prev;
-    fromCopy->tail->next = nodeAfterFrom;
-    nodeAfterFrom->prev = fromCopy->tail;
+    List toCopy = listCopy(to, copyNodeData);
+    nodeAfterFrom->prev->next = toCopy->head;
+    toCopy->head->prev = nodeAfterFrom->prev;
+    toCopy->tail->next = nodeAfterFrom;
+    nodeAfterFrom->prev = toCopy->tail;
+}
+
+void listReplace(List source, List from, List to, bool (*comparator)(void*, void*), void* (*copyNodeData)(void*)) {
+    source->size += from->size - to->size;
+
+    int indexAfterFrom = listGetIndexAfterFirstEntrance(source, from, comparator);
+    int indexBeforeTo = listGetIndexBeforeFirstEntrance(source, to, comparator);
+    node_t* nodeAfterFrom = listGetNodeByIndex(source, indexAfterFrom);
+    node_t* nodeBeforeTo = listGetNodeByIndex(source, indexBeforeTo);
+
+    node_t* next = NULL;
+    for (node_t* n = nodeBeforeTo->next; n != nodeAfterFrom; n = next) {
+        next = n->next;
+        nodeFree(n);
+    }
+
+    List toCopy = listCopy(to, copyNodeData);
+    nodeBeforeTo->next = toCopy->head;
+    toCopy->head->prev = nodeBeforeTo;
+    nodeAfterFrom->prev = toCopy->tail;
+    toCopy->tail->next = nodeAfterFrom;
 }

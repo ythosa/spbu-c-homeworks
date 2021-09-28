@@ -102,6 +102,23 @@ free:
     return commandType;
 }
 
+//int main() {
+//    List l = listCreate();
+//    char a = 'a';
+//    char b = 'b';
+//    char c = 'c';
+//    listPushBack(l, &a);
+//    listPushBack(l, &b);
+//    listPushBack(l, &c);
+//
+//    listPrint(l, listCharElementToString, NULL, stdout);
+//
+//    List new = listCopy(l, listCopyCharElement);
+//    listPrint(new, listCharElementToString, NULL, stdout);
+//
+//    return 0;
+//}
+
 int main(int argc, char* argv[])
 {
     if (argc != 3) {
@@ -144,23 +161,23 @@ int main(int argc, char* argv[])
         List right = listCreate();
         readSequenceToList(right, inputFile);
 
-        listInsertSequenceAfter(sequence, left, comparator, listCopyCharElement);
+        listReplace(sequence, left, right, comparator, listCopyCharElement);
         listPrint(sequence, listCharElementToString, NULL, stdout);
 
-        switch (commandType) {
-        case Delete:
-            printf("Delete ");
-            break;
-        case Insert:
-            printf("Insert ");
-            break;
-        case Replace:
-            printf("Replace ");
-            break;
-        case Unknown:
-            printf("Error: unknown command");
-            break;
-        }
+//        switch (commandType) {
+//        case Delete:
+//            printf("Delete ");
+//            break;
+//        case Insert:
+//            printf("Insert ");
+//            break;
+//        case Replace:
+//            printf("Replace ");
+//            break;
+//        case Unknown:
+//            printf("Error: unknown command");
+//            break;
+//        }
 
         listFree(left);
         listFree(right);

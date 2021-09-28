@@ -42,7 +42,10 @@ void listDeleteSequenceFromTo(List source, List from, List to, bool (*comparator
 void listInsertSequenceAfter(
     List source,
     List from,
+    List to,
     bool (*comparator)(void*, void*),
     void* (*copyNodeData)(void*));
+void listReplace(List source, List from, List to, bool (*comparator)(void*, void*), void* (*copyNodeData)(void*));
+List listCopy(List l, void* (*copyNodeData)(void*));
 
 #endif // SPBU_C_HOMEWORKS_LIST_H
