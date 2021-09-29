@@ -47,7 +47,7 @@ uint8_t* stringC(String s)
     return s->data;
 }
 
-str_t* stringConcat(String left, String right)
+str_t* stringCat(String left, String right)
 {
     str_t* result = stringCreate(left->length + right->length);
 
@@ -58,7 +58,7 @@ str_t* stringConcat(String left, String right)
     return result;
 }
 
-String stringPushChar(String s, char c)
+String stringPush(String s, char c)
 {
     String result = stringCreate(s->length + 1);
     memcpy(result->data, s->data, s->length);
@@ -69,12 +69,12 @@ String stringPushChar(String s, char c)
     return result;
 }
 
-uint8_t stringGetByIndex(String s, uint8_t index)
+uint8_t stringGet(String s, uint8_t index)
 {
     return s->data[index];
 }
 
-int stringCompare(String s1, String s2)
+int stringCmp(String s1, String s2)
 {
     return strcmp((const char*)s1->data, (const char*)s2->data);
 }

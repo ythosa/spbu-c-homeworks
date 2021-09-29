@@ -27,17 +27,17 @@ String stringDup(const char* from);
 uint8_t* stringC(String s);
 
 /* Adds a character to the end of the string. */
-String stringPushChar(String s, char c);
+String stringPush(String s, char c);
 
 /* Performs string concatenation. */
-String stringConcat(String left, String right);
+String stringCat(String left, String right);
 
 /* Returns char element with index from string.
  * There is no check for the validity of the index. */
-uint8_t stringGetByIndex(String s, uint8_t index);
+uint8_t stringGet(String s, uint8_t index);
 
 /* Compares two strings lexicographically.
  * `strcmp` analog. */
-int stringCompare(String s1, String s2);
+int stringCmp(String s1, String s2);
 
 #endif // SPBU_C_HOMEWORKS_STRING_H

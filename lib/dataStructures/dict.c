@@ -104,7 +104,7 @@ void dictPut(Dict d, String key, void* value)
 
     bool isElementWithSuchKeyExists = false;
     for (element_t* e = d->table[h]; e != NULL; e = e->next) {
-        if (stringCompare(e->key, key) == 0) {
+        if (stringCmp(e->key, key) == 0) {
             e->value = value;
             isElementWithSuchKeyExists = true;
             break;
@@ -125,7 +125,7 @@ void dictPut(Dict d, String key, void* value)
 void* dictGet(Dict d, String key)
 {
     for (element_t* e = d->table[hashFunction(key) % d->buffer]; e; e = e->next) {
-        if (!stringCompare(e->key, key)) {
+        if (!stringCmp(e->key, key)) {
             return e->value;
         }
     }
@@ -142,7 +142,7 @@ void dictDelete(Dict d, String key)
         *prev != NULL;
         prev = &((*prev)->next)) {
 
-        if (!stringCompare((*prev)->key, key)) {
+        if (!stringCmp((*prev)->key, key)) {
             nodeToDelete = *prev;
             *prev = nodeToDelete->next;
             elementFree(nodeToDelete, d->freeDictValue);
