@@ -184,14 +184,14 @@ void listPrint(List l, String (*elementFormatter)(void*), char* sep, FILE* dst)
     }
 }
 
-bool isValidListIndex(List l, int index)
+bool isValidListIndexToOperations(List l, int index)
 {
-    return index >= 0 && index < l->size;
+    return index >= 0 && index <= l->size;
 }
 
 node_t* listGet(List l, int position)
 {
-    if (!isValidListIndex(l, position)) {
+    if (!isValidListIndexToOperations(l, position)) {
         return NULL;
     }
 
@@ -231,7 +231,7 @@ int listSubseqIndex(List l, List subseq, bool (*comparator)(void*, void*))
 
 bool listDeleteNodes(List l, int fromPos, int toPos)
 {
-    if (!isValidListIndex(l, fromPos) || !isValidListIndex(l, toPos) || fromPos > toPos) {
+    if (!isValidListIndexToOperations(l, fromPos) || !isValidListIndexToOperations(l, toPos) || fromPos > toPos) {
         return false;
     }
 
@@ -258,7 +258,7 @@ bool listDeleteNodes(List l, int fromPos, int toPos)
 
 bool listInsertSubseq(List l, List subseq, int position, void* (*copyNodeData)(void*))
 {
-    if (!isValidListIndex(l, position)) {
+    if (!isValidListIndexToOperations(l, position)) {
         return false;
     }
 
@@ -270,7 +270,7 @@ bool listInsertSubseq(List l, List subseq, int position, void* (*copyNodeData)(v
         return true;
     }
 
-    if (position == l->size - 1) {
+    if (position == l->size) {
         l->tail->next = subseqCopy->head;
 
         return true;

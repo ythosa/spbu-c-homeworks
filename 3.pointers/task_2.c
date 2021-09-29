@@ -114,8 +114,6 @@ int main(int argc, char* argv[])
 
     List sequence = listCreate();
     readSeqToList(sequence, inputFile);
-    listPrint(sequence, (String(*)(void*))charPointerToString, NULL, outputFile);
-    fprintf(outputFile, "\n");
 
     int operationsLength = 0;
     fscanf(inputFile, "%d", &operationsLength);
