@@ -19,11 +19,19 @@ enum Command {
     Unknown
 };
 
-String pchar2string(const char* c) { return stringPush(stringDup(""), *c); }
-char pchar2char(const char* c) { return *c; }
-bool pcharcmp(const char* c1, const char* c2) {return *c1 == *c2;}
+String charPointerToString(const char* c) {
+    return stringPush(stringDup(""), *c);
+}
 
-char* pcharcpy(const char* c)
+char charPointerToChar(const char* c) {
+    return *c;
+}
+
+bool charPointersCmp(const char* c1, const char* c2) {
+    return *c1 == *c2;
+}
+
+char* charPointerCopy(const char* c)
 {
     char* new = malloc(sizeof(char));
     *new = *c;
@@ -46,7 +54,7 @@ String readCmd(FILE* inputStream)
 {
     List cmd = listCreate();
     readSeqToList(cmd, inputStream);
-    String res = listToString(cmd, (char(*)(void*))pchar2char);
+    String res = listToString(cmd, (char(*)(void*))charPointerToChar);
     listFree(cmd);
 
     return res;
@@ -103,7 +111,7 @@ int main(int argc, char* argv[])
 
     List sequence = listCreate();
     readSeqToList(sequence, inputFile);
-    listPrint(sequence, (String(*)(void*))pchar2string, NULL, outputFile);
+    listPrint(sequence, (String(*)(void*))charPointerToString, NULL, outputFile);
     fprintf(outputFile, "\n");
 
     int operationsLength = 0;
@@ -122,19 +130,19 @@ int main(int argc, char* argv[])
         printf("%d\n", i);
         switch (commandType) {
         case Delete:
-            if (!listDeleteFromToSeqs(sequence, first, second, pcharcmp)) {
+            if (!listDeleteFromToSeqs(sequence, first, second, charPointersCmp)) {
                 printf("Error deleting");
                 exit(0);
             }
             break;
         case Insert:
-            if (!listInsertSeqAfterSeq(sequence, first, second, pcharcmp, pcharcpy)) {
+            if (!listInsertSeqAfterSeq(sequence, first, second, charPointersCmp, charPointerCopy)) {
                 printf("Error inserting");
                 exit(0);
             }
             break;
         case Replace:
-            if (!listReplace(sequence, first, second, pcharcmp, pcharcpy)) {
+            if (!listReplace(sequence, first, second, charPointersCmp, charPointerCopy)) {
                 printf("Error replacing");
                 exit(0);
             }
@@ -144,7 +152,7 @@ int main(int argc, char* argv[])
             exit(0);
         }
 
-        listPrint(sequence, (String(*)(void*))pchar2string, NULL, outputFile);
+        listPrint(sequence, (String(*)(void*))charPointerToString, NULL, outputFile);
         fprintf(outputFile, "\n");
 
         listFree(first);
