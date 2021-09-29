@@ -19,15 +19,18 @@ enum Command {
     Unknown
 };
 
-String charPointerToString(const char* c) {
+String charPointerToString(const char* c)
+{
     return stringPush(stringDup(""), *c);
 }
 
-char charPointerToChar(const char* c) {
+char charPointerToChar(const char* c)
+{
     return *c;
 }
 
-bool charPointersCmp(const char* c1, const char* c2) {
+bool charPointersCmp(const char* c1, const char* c2)
+{
     return *c1 == *c2;
 }
 
