@@ -57,7 +57,7 @@ String readCmd(FILE* inputStream)
 {
     List cmd = listCreate();
     readSeqToList(cmd, inputStream);
-    String res = listToString(cmd, (char(*)(void*))charPointerToChar);
+    String res = listToString(cmd, charPointerToChar);
     listFree(cmd);
 
     return res;
@@ -130,23 +130,22 @@ int main(int argc, char* argv[])
         List second = listCreate();
         readSeqToList(second, inputFile);
 
-        printf("%d\n", i);
         switch (commandType) {
         case Delete:
             if (!listDeleteFromToSeqs(sequence, first, second, charPointersCmp)) {
-                printf("Error deleting");
+                printf("Error deleting on command: %d", i + 1);
                 exit(0);
             }
             break;
         case Insert:
             if (!listInsertSeqAfterSeq(sequence, first, second, charPointersCmp, charPointerCopy)) {
-                printf("Error inserting");
+                printf("Error inserting on command: %d", i + 1);
                 exit(0);
             }
             break;
         case Replace:
             if (!listReplace(sequence, first, second, charPointersCmp, charPointerCopy)) {
-                printf("Error replacing");
+                printf("Error replacing on command: %d", i + 1);
                 exit(0);
             }
             break;
