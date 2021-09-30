@@ -4,18 +4,17 @@
 #ifndef SPBU_C_HOMEWORKS_HASHTABLE_H
 #define SPBU_C_HOMEWORKS_HASHTABLE_H
 
-typedef struct element {
-    struct element* next;
-    String key;
-    void* value;
-} element_t;
+/* Dict element type - key/value pair. */
+typedef struct element element_t;
 
-typedef struct dict {
-    int buffer; // buffer of the pointer table
-    int size; // number of elements stored
-    element_t** table;
-    void (*freeDictValue)(void*);
-} dict_t;
+/* Return element key. */
+String elementGetKey(element_t* e);
+
+/* Returns element value. */
+void* elementGetValue(element_t* e);
+
+/* Returns next element. */
+element_t* elementGetNext(element_t* e);
 
 /* A dictionary is a reference type.
  * You should use dictFree to free up the dictionary memory. */
@@ -28,6 +27,15 @@ Dict dictCreate(void (*freeDictValue)(void*));
 /* Free dictionary memory.
  * You need to provide a function to free up the memory of dictionary values. */
 void dictFree(Dict d, void (*freeDictValue)(void*));
+
+/* Returns buffer size of dictionary. */
+int dictGetBufferSize(Dict d);
+
+/* Returns dictionary size. */
+int dictGetSize(Dict d);
+
+/* Returns dict elements list by index. */
+element_t* dictGetElementsByIndex(Dict d, int index);
 
 /* Insert a new key-value pair into an existing dictionary. */
 void dictPut(Dict d, String key, void* value);

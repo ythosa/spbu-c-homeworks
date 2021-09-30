@@ -231,7 +231,9 @@ int listSubseqIndex(List l, List subseq, bool (*comparator)(void*, void*))
 
 bool listDeleteNodes(List l, int fromPos, int toPos)
 {
-    if (!isValidListIndexToOperations(l, fromPos) || !isValidListIndexToOperations(l, toPos) || fromPos > toPos) {
+    if (!isValidListIndexToOperations(l, fromPos)
+        || !isValidListIndexToOperations(l, toPos)
+        || fromPos > toPos) {
         return false;
     }
 

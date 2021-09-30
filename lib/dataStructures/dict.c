@@ -4,6 +4,12 @@
 
 #include "dict.h"
 
+struct element {
+    struct element* next;
+    String key;
+    void* value;
+};
+
 element_t* elementCreate(element_t* next, String key, void* value)
 {
     element_t* node = malloc(sizeof(element_t));
@@ -21,9 +27,31 @@ void elementFree(element_t* node, void (*freeDictValue)(void*))
     free(node);
 }
 
+String elementGetKey(element_t* e)
+{
+    return e->key;
+}
+
+void* elementGetValue(element_t* e)
+{
+    return e->value;
+}
+
+element_t* elementGetNext(element_t* e)
+{
+    return e->next;
+}
+
 #define INITIAL_SIZE (1024)
 #define GROWTH_FACTOR (2)
 #define MAX_LOAD_FACTOR (1)
+
+typedef struct dict {
+    int buffer; // buffer of the pointer table
+    int size; // number of elements stored
+    element_t** table;
+    void (*freeDictValue)(void*);
+} dict_t;
 
 Dict internalDictCreate(int size, void (*freeDictValue)(void*))
 {
@@ -60,6 +88,21 @@ void dictFree(Dict d, void (*freeDictValue)(void*))
     free(d);
 }
 
+int dictGetBufferSize(Dict d)
+{
+    return d->buffer;
+}
+
+int dictGetSize(Dict d)
+{
+    return d->size;
+}
+
+element_t* dictGetElementsByIndex(Dict d, int index)
+{
+    return d->table[index];
+}
+
 #define MULTIPLIER (97)
 
 static unsigned long hashFunction(String string)
@@ -90,8 +133,8 @@ static void grow(Dict d)
             dictPut(newDict, e->key, e->value);
         }
     }
-    swapDicts(d, newDict);
 
+    swapDicts(d, newDict);
     dictFree(newDict, d->freeDictValue);
 }
 
@@ -154,12 +197,12 @@ void dictDelete(Dict d, String key)
 
 void dictPrint(Dict d, String (*valueFormatter)(void*), FILE* dst)
 {
-    for (int i = 0; i < d->buffer; i++) {
-        for (element_t* e = d->table[i]; e != NULL; e = e->next) {
+    for (int i = 0; i < dictGetBufferSize(d); i++) {
+        for (element_t* e = dictGetElementsByIndex(d, i); e != NULL; e = elementGetNext(e)) {
             fprintf(dst, "key: ");
-            stringPrint(e->key, dst);
+            stringPrint(elementGetKey(e), dst);
             fprintf(dst, " value: ");
-            String s = valueFormatter(e->value);
+            String s = valueFormatter(elementGetValue(e));
             stringPrint(s, dst);
             stringFree(s);
             fprintf(dst, "\n");

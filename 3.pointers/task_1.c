@@ -4,7 +4,7 @@
 #include "../lib/dataStructures/dict.h"
 #include "../lib/io/csv.h"
 
-#define MAX_WORD_LENGTH 128
+#define MAX_WORD_LENGTH 129
 
 void readWordsToDict(FILE* inputStream, Dict words)
 {
@@ -25,7 +25,7 @@ void readWordsToDict(FILE* inputStream, Dict words)
 
 String dictValueFormatter(const int* v)
 {
-    char str[64];
+    char str[64] = "";
     sprintf(str, "%d", *v);
 
     return stringDup(str);
