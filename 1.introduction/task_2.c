@@ -1,10 +1,14 @@
-#include "../lib/commonUtils/arrayOperations.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+int compareInts(int a, int b)
+{
+    return (a > b) - (a < b);
+}
+
 int findIndexOfMaxElementOccurringMoreThanOnce(int* array, int arraySize)
 {
-    quickSort(array, 0, arraySize - 1);
+    qsort(array, arraySize, sizeof(int), (int(*)(const void*, const void*))compareInts);
 
     for (int i = arraySize - 1; i > 0; i--) {
         if (array[i] == array[i - 1]) {
