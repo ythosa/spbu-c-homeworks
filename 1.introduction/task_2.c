@@ -8,7 +8,7 @@ int compareInts(int a, int b)
 
 int findIndexOfMaxElementOccurringMoreThanOnce(int* array, int arraySize)
 {
-    qsort(array, arraySize, sizeof(int), (int(*)(const void*, const void*))compareInts);
+    qsort(array, arraySize, sizeof(int), compareInts);
 
     for (int i = arraySize - 1; i > 0; i--) {
         if (array[i] == array[i - 1]) {
