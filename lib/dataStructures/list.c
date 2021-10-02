@@ -6,332 +6,282 @@
 
 #include "list.h"
 
-typedef struct node {
-    struct node* next;
+typedef struct Node {
+    struct Node* next;
     void* data;
 } node_t;
 
 node_t* nodeCreate(node_t* next, void* data)
 {
-    node_t* n = malloc(sizeof(node_t));
-    n->next = next;
-    n->data = data;
+    node_t* node = malloc(sizeof(node_t));
+    node->next = next;
+    node->data = data;
 
-    return n;
+    return node;
 }
 
-void nodeFree(node_t* node)
+void nodeFree(node_t* node, void (*freeNodeData)(void*))
 {
-    free(node->data);
+    freeNodeData(node->data);
     free(node);
 }
 
 node_t* nodeCopy(node_t* node, void* (*copyNodeData)(void*))
 {
-    if (!node) {
+    if (!node)
         return NULL;
-    }
 
-    return nodeCreate(
-        nodeCopy(node->next, copyNodeData),
-        copyNodeData(node->data));
+    return nodeCreate(nodeCopy(node->next, copyNodeData), copyNodeData(node->data));
 }
 
-typedef struct list {
-    struct node* head;
-    struct node* tail;
+typedef struct List {
+    struct Node* head;
+    struct Node* tail;
     int size;
+    void (*freeNodeData)(void*);
 } list_t;
 
-List listCreate()
+List listCreate(void (*freeNodeData)(void*))
 {
-    List l = malloc(sizeof(list_t));
-    l->size = 0;
-    l->head = NULL;
-    l->tail = NULL;
+    List list = malloc(sizeof(list_t));
 
-    return l;
+    list->size = 0;
+    list->head = NULL;
+    list->tail = NULL;
+    list->freeNodeData = freeNodeData;
+
+    return list;
 }
 
-void listFree(List l)
+void listFree(List list)
 {
     node_t* next = NULL;
-    for (node_t* node = l->head; node != NULL; node = next) {
+    for (node_t* node = list->head; node; node = next) {
         next = node->next;
-        nodeFree(node);
+        nodeFree(node, list->freeNodeData);
     }
 
-    free(l);
+    free(list);
 }
 
-int listSize(List l)
+int listSize(List list)
 {
-    return l->size;
+    return list->size;
 }
 
-List listCpy(List l, void* (*copyNodeData)(void*))
+List listCopy(List list, void* (*copyNodeData)(void*))
 {
-    List copy = listCreate();
-    copy->size = l->size;
-    copy->head = nodeCopy(l->head, copyNodeData);
+    List copy = listCreate(list->freeNodeData);
+    copy->size = list->size;
+    copy->head = nodeCopy(list->head, copyNodeData);
 
-    node_t* n = copy->head;
-    while (n->next) {
-        n = n->next;
-    }
-    copy->tail = n;
+    node_t* currentNode = copy->head;
+    while (currentNode->next)
+        currentNode = currentNode->next;
+    copy->tail = currentNode;
 
     return copy;
 }
 
-bool listInsert(List l, int position, void* data)
+void listPushback(List list, void* data)
 {
-    if (position < 0 || position > l->size - 1) {
-        return false;
-    }
+    list->size++;
 
-    node_t* newNode = nodeCreate(NULL, data);
-    if (l->head == NULL) {
-        if (position == 0) {
-            l->head = newNode;
-            l->tail = newNode;
-            l->size++;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    l->size++;
-
-    if (position == 0) {
-        newNode->next = l->head;
-        l->head = newNode;
-
-        return true;
-    }
-
-    if (position == l->size - 1) {
-        l->tail->next = newNode;
-        l->tail = newNode;
-
-        return true;
-    }
-
-    node_t* nodeBefore = l->head;
-    for (int i = 0; i < position - 1; i++) {
-        nodeBefore = nodeBefore->next;
-    }
-    node_t* nodeAfter = nodeBefore->next;
-    nodeBefore->next = newNode;
-    newNode->next = nodeAfter;
-
-    return true;
-}
-
-void listPushback(List l, void* data)
-{
-    l->size++;
-
-    if (!l->head) {
-        l->tail = NULL;
-        l->head = nodeCreate(l->tail, data);
+    if (!list->head) {
+        list->tail = NULL;
+        list->head = nodeCreate(list->tail, data);
 
         return;
     }
 
     node_t* newNode = nodeCreate(NULL, data);
 
-    if (!l->tail) {
-        l->tail = newNode;
-        l->head->next = l->tail;
+    if (!list->tail) {
+        list->tail = newNode;
+        list->head->next = list->tail;
 
         return;
     }
 
-    l->tail->next = newNode;
-    l->tail = newNode;
+    list->tail->next = newNode;
+    list->tail = newNode;
 }
 
-String listToString(List l, char (*elementToChar)(void*))
+String listToString(List list, char (*convertElementToChar)(void*))
 {
     String result = stringDup("");
 
-    node_t* n = l->head;
-    while (n) {
-        char c = elementToChar(n->data);
-        result = stringPush(result, c);
-        n = n->next;
+    node_t* currentNode = list->head;
+    while (currentNode) {
+        result = stringPush(result, convertElementToChar(currentNode->data));
+        currentNode = currentNode->next;
     }
 
     return result;
 }
 
-void listPrint(List l, String (*elementFormatter)(void*), char* sep, FILE* dst)
+void listPrint(List list, String (*formatElementData)(void*), char* separator, FILE* destination)
 {
-    node_t* n = l->head;
-    while (n) {
-        String s = elementFormatter(n->data);
-        stringPrint(s, dst);
+    node_t* currentNode = list->head;
+    while (currentNode) {
+        String s = formatElementData(currentNode->data);
+        stringPrint(s, destination);
         stringFree(s);
 
-        if (sep) {
-            fprintf(dst, "%s", sep);
-        }
+        if (separator)
+            fprintf(destination, "%s", separator);
 
-        n = n->next;
+        currentNode = currentNode->next;
     }
 }
 
-bool isValidListIndexToOperations(List l, int index)
+bool isValidListIndex(List list, int index)
 {
-    return index >= 0 && index <= l->size;
+    return index >= 0 && index < list->size;
 }
 
-node_t* listGet(List l, int position)
+node_t* listGet(List list, int position)
 {
-    if (!isValidListIndexToOperations(l, position)) {
+    if (!isValidListIndex(list, position))
         return NULL;
-    }
 
-    node_t* node = l->head;
-    for (int i = 0; i < position; i++) {
+    node_t* node = list->head;
+    for (int i = 0; i < position; i++)
         node = node->next;
-    }
 
     return node;
 }
 
-int listSubseqIndex(List l, List subseq, bool (*comparator)(void*, void*))
+int listSubsequenceIndex(List list, List subsequence, bool (*compareNodeData)(void*, void*))
 {
-    if (subseq->size > l->size) {
+    if (subsequence->size > list->size)
         return -1;
-    }
 
-    for (int i = 0; i < l->size - subseq->size; i++) {
+    for (int i = 0; i < list->size - subsequence->size; i++) {
         bool isFound = true;
-        for (int j = 0; j < subseq->size; j++) {
-            node_t* li = listGet(l, i + j);
-            node_t* si = listGet(subseq, j);
+        for (int j = 0; j < subsequence->size; j++) {
+            node_t* li = listGet(list, i + j);
+            node_t* si = listGet(subsequence, j);
 
-            if (!comparator(li->data, si->data)) {
+            if (!compareNodeData(li->data, si->data)) {
                 isFound = false;
                 break;
             }
         }
 
-        if (isFound) {
+        if (isFound)
             return i;
-        }
     }
 
     return -1;
 }
 
-bool listDeleteNodes(List l, int fromPos, int toPos)
+bool isValidListIndexToOperations(List list, int index)
 {
-    if (!isValidListIndexToOperations(l, fromPos)
-        || !isValidListIndexToOperations(l, toPos)
-        || fromPos > toPos) {
+    return index >= 0 && index <= list->size;
+}
+
+bool listDeleteNodes(List l, int fromIndex, int byIndex)
+{
+    if (!isValidListIndexToOperations(l, fromIndex)
+        || !isValidListIndexToOperations(l, byIndex)
+        || fromIndex >= byIndex) {
         return false;
     }
 
-    node_t* curNode = l->head;
+    node_t* currentNode = l->head;
     int i = 0;
-    for (; i < fromPos - 1; i++) {
-        curNode = curNode->next;
-    }
-    node_t* beforeFromNode = curNode;
+    for (; i < fromIndex - 1; i++)
+        currentNode = currentNode->next;
+    node_t* beforeFromNode = currentNode;
 
-    node_t* nextNode;
-    curNode = curNode->next;
-    for (; i < toPos - 1; i++) {
-        nextNode = curNode->next;
-        nodeFree(curNode);
-        curNode = nextNode;
+    node_t* nextNode = NULL;
+    currentNode = currentNode->next;
+    for (; i < byIndex - 1; i++) {
+        nextNode = currentNode->next;
+        nodeFree(currentNode, l->freeNodeData);
+        currentNode = nextNode;
     }
     beforeFromNode->next = nextNode;
 
-    l->size -= toPos - fromPos;
+    l->size -= byIndex - fromIndex;
 
     return true;
 }
 
-bool listInsertSubseq(List l, List subseq, int position, void* (*copyNodeData)(void*))
+bool listInsertSequence(List list, List sequence, int position, void* (*copyNodeData)(void*))
 {
-    if (!isValidListIndexToOperations(l, position)) {
+    if (!isValidListIndexToOperations(list, position))
         return false;
-    }
 
-    List subseqCopy = listCpy(subseq, copyNodeData);
+    List sequenceCopy = listCopy(sequence, copyNodeData);
     if (position == 0) {
-        subseqCopy->tail->next = l->head;
-        l->head = subseqCopy->head;
+        sequenceCopy->tail->next = list->head;
+        list->head = sequenceCopy->head;
 
         return true;
     }
 
-    if (position == l->size) {
-        l->tail->next = subseqCopy->head;
+    if (position == list->size) {
+        list->tail->next = sequenceCopy->head;
 
         return true;
     }
 
-    node_t* nodeBefore = listGet(l, position - 1);
-    subseqCopy->tail->next = nodeBefore->next;
-    nodeBefore->next = subseqCopy->head;
+    node_t* nodeBefore = listGet(list, position - 1);
+    sequenceCopy->tail->next = nodeBefore->next;
+    nodeBefore->next = sequenceCopy->head;
 
-    l->size += subseq->size;
+    list->size += sequenceCopy->size;
 
     return true;
 }
 
-bool listDeleteFromToSeqs(List l, List lseq, List rseq, bool (*comparator)(void*, void*))
+bool listDeleteFromSequenceBySequence(
+    List list,
+    List fromSequence,
+    List bySequence,
+    bool (*compareNodeData)(void*, void*))
 {
-    int indexFrom = listSubseqIndex(l, lseq, comparator);
-    if (indexFrom < 0) {
+    int indexFromWhichDeleteElements = listSubsequenceIndex(list, fromSequence, compareNodeData);
+    if (indexFromWhichDeleteElements < 0)
         return false;
-    }
 
-    int indexTo = listSubseqIndex(l, rseq, comparator) + rseq->size;
-    if (indexTo < 0) {
+    int indexByWhichDeleteElements
+        = listSubsequenceIndex(list, bySequence, compareNodeData) + bySequence->size;
+    if (indexByWhichDeleteElements < 0)
         return false;
-    }
 
-    return listDeleteNodes(l, indexFrom, indexTo);
+    return listDeleteNodes(list, indexFromWhichDeleteElements, indexByWhichDeleteElements);
 }
 
-bool listInsertSeqAfterSeq(
-    List l,
-    List after,
-    List seq,
-    bool (*comparator)(void*, void*),
+bool listInsertSequenceAfterSequence(
+    List list,
+    List sequenceAfter,
+    List sequence,
+    bool (*compareNodeData)(void*, void*),
     void* (*copyNodeData)(void*))
 {
-    int afterIndex = listSubseqIndex(l, after, comparator);
-    if (afterIndex < 0) {
+    int sequenceAfterIndex = listSubsequenceIndex(list, sequenceAfter, compareNodeData);
+    if (sequenceAfterIndex < 0)
         return false;
-    }
 
-    return listInsertSubseq(l, seq, afterIndex + after->size, copyNodeData);
+    return listInsertSequence(list, sequence, sequenceAfterIndex + sequenceAfter->size, copyNodeData);
 }
 
-bool listReplace(
-    List l,
-    List from,
-    List to,
-    bool (*comparator)(void*, void*),
+bool listReplaceSequence(
+    List list,
+    List sequenceToBeReplaced,
+    List sequenceReplaceWith,
+    bool (*compareNodeData)(void*, void*),
     void* (*copyNodeData)(void*))
 {
-    int indexFrom = listSubseqIndex(l, from, comparator);
-    if (indexFrom < 0) {
+    int indexFrom = listSubsequenceIndex(list, sequenceToBeReplaced, compareNodeData);
+    if (indexFrom < 0)
         return false;
-    }
 
-    if (!listDeleteNodes(l, indexFrom, indexFrom + from->size)) {
+    if (!listDeleteNodes(list, indexFrom, indexFrom + sequenceToBeReplaced->size))
         return false;
-    }
 
-    return listInsertSubseq(l, to, indexFrom, copyNodeData);
+    return listInsertSequence(list, sequenceReplaceWith, indexFrom, copyNodeData);
 }

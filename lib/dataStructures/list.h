@@ -3,62 +3,63 @@
 #define SPBU_C_HOMEWORKS_LIST_H
 
 /* A List is a reference type.
- * You should use listFree to free up the string memory. */
-typedef struct list* List;
+ * You should use listFree to free up the String memory. */
+typedef struct List* List;
 
-/* Creates empty list. */
-List listCreate();
+/* Creates empty List. */
+List listCreate(void (*freeNodeData)(void*));
 
-/* Free up list memory. */
-void listFree(List l);
+/* Free up List memory. */
+void listFree(List list);
 
-/* Adds an element to the end of the list. */
-void listPushback(List l, void* data);
+/* Adds an Element to the end of the List. */
+void listPushback(List list, void* data);
 
-/* Returns list size. */
-int listSize(List l);
+/* Returns List size. */
+int listSize(List list);
 
-/* Inserts an element to list position. */
-bool listInsert(List l, int position, void* data);
+/* Prints List to `destination` output in format "<e1><separator><e2><separator>...".
+ * You need to provide a function that formats Element to String and elements separator. */
+void listPrint(List list, String (*formatElementData)(void*), char* separator, FILE* destination);
 
-/* Prints list to `dst` output in format "<e1><sep><e2><sep>...".
- * You need to provide a function that formats element to string and elements separator. */
-void listPrint(List l, String (*elementFormatter)(void*), char* sep, FILE* dst);
+/* Converts List to String.
+ * You need to provide a function that formats Element to char. */
+String listToString(List list, char (*convertElementToChar)(void* element));
 
-/* Converts list to string.
- * You need to provide a function that formats element to char. */
-String listToString(List l, char (*elementToChar)(void* element));
+/* Copies List and return new List. */
+List listCopy(List list, void* (*copyNodeData)(void*));
 
-/* Copies list and return new list. */
-List listCpy(List l, void* (*copyNodeData)(void*));
-
-/* Returns the index of the first occurrence of the subsequence in the list
+/* Returns the index of the first occurrence of the subsequence in the List
  * or `-1` if subsequence not found. */
-int listSubseqIndex(List l, List subseq, bool (*comparator)(void*, void*));
+int listSubsequenceIndex(List list, List subsequence, bool (*compareNodeData)(void*, void*));
 
-/* Deletes nodes from list. Starts from `fromPos` ends `toPos` (not include). */
-bool listDeleteNodes(List l, int fromPos, int toPos);
+/* Deletes nodes from List. Starts from `fromIndex` ends `byIndex` (not include). */
+bool listDeleteNodes(List l, int fromIndex, int byIndex);
 
-/* Inserts list into list position. Need to provide a function that copies node data. */
-bool listInsertSubseq(List l, List subseq, int position, void* (*copyNodeData)(void*));
+/* Inserts List into List position. Need to provide a function that copies Node data. */
+bool listInsertSequence(List list, List sequence, int position, void* (*copyNodeData)(void*));
 
-/* Deletes from list subsequence that starts from `lseq` and ends `rseq`. */
-bool listDeleteFromToSeqs(List l, List lseq, List rseq, bool (*comparator)(void*, void*));
+/* Deletes from List subsequence that starts from `fromSequence` and ends `bySequence`. */
+bool listDeleteFromSequenceBySequence(
+    List list,
+    List fromSequence,
+    List bySequence,
+    bool (*compareNodeData)(void*, void*));
 
-/* Inserts sequence `seq` after first occurrence of sequence `after`. */
-bool listInsertSeqAfterSeq(
-    List l,
-    List after,
-    List seq,
-    bool (*comparator)(void*, void*),
+/* Inserts sequence `sequence` sequenceAfter first occurrence of sequence `sequenceAfter`. */
+bool listInsertSequenceAfterSequence(
+    List list,
+    List sequenceAfter,
+    List sequence,
+    bool (*compareNodeData)(void*, void*),
     void* (*copyNodeData)(void*));
 
-/* Replaces first occurrence of sequence `from` to sequence `to`. */
-bool listReplace(
-    List l,
-    List from,
-    List to,
-    bool (*comparator)(void*, void*),
+/* Replaces first occurrence of sequence `sequenceToBeReplaced` to sequence `sequenceReplaceWith`. */
+bool listReplaceSequence(
+    List list,
+    List sequenceToBeReplaced,
+    List sequenceReplaceWith,
+    bool (*compareNodeData)(void*, void*),
     void* (*copyNodeData)(void*));
 
 #endif // SPBU_C_HOMEWORKS_LIST_H

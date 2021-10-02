@@ -4,15 +4,16 @@
 
 #include "dict.h"
 
-struct element {
-    struct element* next;
+struct Element {
+    struct Element* next;
     String key;
     void* value;
 };
 
-element_t* elementCreate(element_t* next, String key, void* value)
+static element_t* elementCreate(element_t* next, String key, void* value)
 {
     element_t* node = malloc(sizeof(element_t));
+
     node->next = next;
     node->key = key;
     node->value = value;
@@ -20,34 +21,34 @@ element_t* elementCreate(element_t* next, String key, void* value)
     return node;
 }
 
-void elementFree(element_t* node, void (*freeDictValue)(void*))
+static void elementFree(element_t* node, void (*freeElementValue)(void*))
 {
     stringFree(node->key);
-    freeDictValue(node->value);
+    freeElementValue(node->value);
     free(node);
 }
 
-String elementGetKey(element_t* e)
+String elementGetKey(element_t* element)
 {
-    return e->key;
+    return element->key;
 }
 
-void* elementGetValue(element_t* e)
+void* elementGetValue(element_t* element)
 {
-    return e->value;
+    return element->value;
 }
 
-element_t* elementGetNext(element_t* e)
+element_t* elementGetNext(element_t* element)
 {
-    return e->next;
+    return element->next;
 }
 
 #define INITIAL_SIZE (1024)
 #define GROWTH_FACTOR (2)
 #define MAX_LOAD_FACTOR (1)
 
-typedef struct dict {
-    int buffer; // buffer of the pointer table
+typedef struct Dict {
+    int bufferSize; // bufferSize of the pointer table
     int size; // number of elements stored
     element_t** table;
     void (*freeDictValue)(void*);
@@ -55,157 +56,148 @@ typedef struct dict {
 
 Dict internalDictCreate(int size, void (*freeDictValue)(void*))
 {
-    Dict d = malloc(sizeof(dict_t));
-    d->freeDictValue = freeDictValue;
-    d->buffer = size;
-    d->size = 0;
-    d->table = malloc(d->buffer * sizeof(element_t*));
+    Dict dict = malloc(sizeof(dict_t));
 
-    for (int i = 0; i < d->buffer; i++) {
-        d->table[i] = NULL;
-    }
+    dict->bufferSize = size;
+    dict->size = 0;
+    dict->table = calloc(dict->bufferSize, sizeof(element_t*));
+    dict->freeDictValue = freeDictValue;
 
-    return d;
+    return dict;
 }
 
-Dict dictCreate(void (*freeDictValue)(void*))
+Dict dictCreate(void (*freeElementValue)(void*))
 {
-    return internalDictCreate(INITIAL_SIZE, freeDictValue);
+    return internalDictCreate(INITIAL_SIZE, freeElementValue);
 }
 
-void dictFree(Dict d, void (*freeDictValue)(void*))
+void dictFree(Dict dict)
 {
-    element_t* next = NULL;
-
-    for (int i = 0; i < d->buffer; i++) {
-        for (element_t* node = d->table[i]; node != NULL; node = next) {
+    for (int i = 0; i < dict->bufferSize; i++) {
+        element_t* next = NULL;
+        for (element_t* node = dict->table[i]; node; node = next) {
             next = node->next;
-            elementFree(node, freeDictValue);
+            elementFree(node, dict->freeDictValue);
         }
     }
 
-    free(d->table);
-    free(d);
+    free(dict->table);
+    free(dict);
 }
 
-int dictGetBufferSize(Dict d)
+int dictGetBufferSize(Dict dict)
 {
-    return d->buffer;
+    return dict->bufferSize;
 }
 
-int dictGetSize(Dict d)
+int dictGetSize(Dict dict)
 {
-    return d->size;
+    return dict->size;
 }
 
-element_t* dictGetElementsByIndex(Dict d, int index)
+element_t* dictGetElementsByIndex(Dict dict, int index)
 {
-    return d->table[index];
+    return dict->table[index];
 }
 
 #define MULTIPLIER (97)
 
-static unsigned long hashFunction(String string)
+static unsigned long calculateHashOfString(String string)
 {
     uint8_t* s = stringC(string);
     unsigned long hash = 0;
 
-    for (unsigned const char* us = (unsigned const char*)s; *us; us++) {
+    for (unsigned const char* us = (unsigned const char*)s; *us; us++)
         hash = hash * MULTIPLIER + *us;
-    }
 
     return hash;
 }
 
-void swapDicts(Dict first, Dict second)
+static unsigned long dictCalculateBinIndex(Dict dict, String key)
+{
+    return calculateHashOfString(key) % dict->bufferSize;
+}
+
+static void swapDicts(Dict first, Dict second)
 {
     dict_t temp = *first;
     *first = *second;
     *second = temp;
 }
 
-static void grow(Dict d)
+static void dictGrow(Dict dict)
 {
-    Dict newDict = internalDictCreate(d->buffer * GROWTH_FACTOR, d->freeDictValue);
+    Dict newDict = internalDictCreate(dict->bufferSize * GROWTH_FACTOR, dict->freeDictValue);
 
-    for (int i = 0; i < d->buffer; i++) {
-        for (element_t* e = d->table[i]; e != 0; e = e->next) {
-            dictPut(newDict, e->key, e->value);
-        }
-    }
+    for (int i = 0; i < dict->bufferSize; i++)
+        for (element_t* element = dict->table[i]; element; element = element->next)
+            dictPut(newDict, element->key, element->value);
 
-    swapDicts(d, newDict);
-    dictFree(newDict, d->freeDictValue);
+    swapDicts(dict, newDict);
+    dictFree(newDict);
 }
 
-void dictPut(Dict d, String key, void* value)
+element_t* dictFind(Dict dict, String key)
 {
-    assert(key);
-    assert(value);
-
-    unsigned long h = hashFunction(key) % d->buffer;
-
-    bool isElementWithSuchKeyExists = false;
-    for (element_t* e = d->table[h]; e != NULL; e = e->next) {
-        if (stringCmp(e->key, key) == 0) {
-            e->value = value;
-            isElementWithSuchKeyExists = true;
-            break;
-        }
-    }
-
-    if (!isElementWithSuchKeyExists) {
-        element_t* e = elementCreate(d->table[h], key, value);
-        d->table[h] = e;
-        d->size++;
-    }
-
-    if (d->size >= d->buffer * MAX_LOAD_FACTOR) {
-        grow(d);
-    }
-}
-
-void* dictGet(Dict d, String key)
-{
-    for (element_t* e = d->table[hashFunction(key) % d->buffer]; e; e = e->next) {
-        if (!stringCmp(e->key, key)) {
-            return e->value;
-        }
-    }
+    for (element_t* element = dict->table[dictCalculateBinIndex(dict, key)]; element; element = element->next)
+        if (!stringCmp(element->key, key))
+            return element;
 
     return NULL;
 }
 
-void dictDelete(Dict d, String key)
+void* dictGet(Dict dict, String key)
 {
-    element_t* nodeToDelete = NULL;
+    element_t* element = dictFind(dict, key);
+    if (element)
+        return element->value;
 
-    for (
-        element_t** prev = &(d->table[hashFunction(key) % d->buffer]);
-        *prev != NULL;
-        prev = &((*prev)->next)) {
+    return NULL;
+}
 
-        if (!stringCmp((*prev)->key, key)) {
-            nodeToDelete = *prev;
-            *prev = nodeToDelete->next;
-            elementFree(nodeToDelete, d->freeDictValue);
+void dictPut(Dict dict, String key, void* value)
+{
+    assert(key);
+
+    element_t* elementWithSuchKey = dictGet(dict, key);
+    if (elementWithSuchKey) {
+        elementWithSuchKey->value = value;
+
+        return;
+    }
+
+    unsigned long binIndex = dictCalculateBinIndex(dict, key);
+    dict->table[binIndex] = elementCreate(dict->table[binIndex], key, value);
+    dict->size++;
+
+    if (dict->size >= dict->bufferSize * MAX_LOAD_FACTOR)
+        dictGrow(dict);
+}
+
+void dictDelete(Dict dict, String key)
+{
+    unsigned long binIndex = dictCalculateBinIndex(dict, key);
+    for (element_t** nextPointer = &dict->table[binIndex]; *nextPointer; nextPointer = &((*nextPointer)->next))
+        if (!stringCmp((*nextPointer)->key, key)) {
+            element_t* nodeToDelete = NULL;
+            nodeToDelete = *nextPointer;
+            *nextPointer = nodeToDelete->next;
+            elementFree(nodeToDelete, dict->freeDictValue);
 
             return;
         }
-    }
 }
 
-void dictPrint(Dict d, String (*valueFormatter)(void*), FILE* dst)
+void dictPrint(Dict dict, String (*convertElementValueToString)(void*), FILE* dst)
 {
-    for (int i = 0; i < dictGetBufferSize(d); i++) {
-        for (element_t* e = dictGetElementsByIndex(d, i); e != NULL; e = elementGetNext(e)) {
+    for (int i = 0; i < dictGetBufferSize(dict); i++)
+        for (element_t* element = dictGetElementsByIndex(dict, i); element; element = elementGetNext(element)) {
             fprintf(dst, "key: ");
-            stringPrint(elementGetKey(e), dst);
+            stringPrint(elementGetKey(element), dst);
             fprintf(dst, " value: ");
-            String s = valueFormatter(elementGetValue(e));
+            String s = convertElementValueToString(elementGetValue(element));
             stringPrint(s, dst);
             stringFree(s);
             fprintf(dst, "\n");
         }
-    }
 }

@@ -38,7 +38,7 @@ int main()
         return 0;
     }
 
-    printf("Maximum element occurring more than once is %d", array[indexOfMaxElement]);
+    printf("Maximum Element occurring more than once is %d", array[indexOfMaxElement]);
 
     free(array);
 }

@@ -1,9 +1,8 @@
 #include "./string.h"
 
-typedef struct string {
+typedef struct String {
     uint8_t* data;
     uint8_t length;
-    uint8_t capacity;
 } str_t;
 
 str_t* stringCreate(uint8_t length)
@@ -11,8 +10,7 @@ str_t* stringCreate(uint8_t length)
     str_t* s = malloc(sizeof(str_t));
 
     s->length = length;
-    s->data = malloc(length * sizeof(uint8_t));
-    s->capacity = 0;
+    s->data = malloc(length * sizeof(uint8_t) + 1); // + 1 for \0 symbol
 
     return s;
 }
@@ -33,11 +31,10 @@ void stringPrint(String s, FILE* dst)
     fwrite(s->data, sizeof(uint8_t), s->length, dst);
 }
 
-str_t* stringDup(const char* from)
+String stringDup(const char* from)
 {
-    str_t* s = stringCreate(strlen(from));
-    memcpy(s->data, from, s->length);
-    s->capacity = s->length;
+    String s = stringCreate(strlen(from));
+    memcpy(s->data, from, s->length + 1); // +1 for copy \0 symbol
 
     return s;
 }
@@ -47,13 +44,12 @@ uint8_t* stringC(String s)
     return s->data;
 }
 
-str_t* stringCat(String left, String right)
+String stringCat(String left, String right)
 {
-    str_t* result = stringCreate(left->length + right->length);
+    String result = stringCreate(left->length + right->length);
 
     memcpy(result->data, left->data, left->length);
-    memcpy(result->data + left->length, right->data, right->length);
-    result->capacity = result->length;
+    memcpy(result->data + left->length, right->data, right->length + 1); // +1 for copy \0 symbol
 
     return result;
 }
@@ -61,9 +57,11 @@ str_t* stringCat(String left, String right)
 String stringPush(String s, char c)
 {
     String result = stringCreate(s->length + 1);
+
     memcpy(result->data, s->data, s->length);
-    memcpy(result->data + s->length, &c, 1);
-    result->capacity = result->length;
+    result->data[s->length] = c;
+    result->data[s->length + 1] = '\0';
+
     stringFree(s);
 
     return result;

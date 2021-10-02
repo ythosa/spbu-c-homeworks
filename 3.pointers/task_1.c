@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include <unistd.h>
 
 #include "../lib/dataStructures/dict.h"
 #include "../lib/io/csv.h"
 
-#define MAX_WORD_LENGTH 129
+#define MAX_WORD_LENGTH 128
 
 void readWordsToDict(FILE* inputStream, Dict words)
 {
@@ -12,10 +11,9 @@ void readWordsToDict(FILE* inputStream, Dict words)
     while (fscanf(inputStream, "%s", buffer) != EOF) {
         String key = stringDup(buffer);
         int* value = (int*)dictGet(words, key);
-        if (value) {
-            ++*value;
-            dictPut(words, key, value);
-        } else {
+        if (value)
+            ++(*value);
+        else {
             value = malloc(sizeof(int));
             *value = 1;
             dictPut(words, key, value);
@@ -39,18 +37,7 @@ int main(int argc, char* argv[])
     }
 
     char* inputFilePath = argv[1];
-    if (access(inputFilePath, F_OK) != 0) {
-        printf("error: file: %s doesn't exists", inputFilePath);
-
-        return 0;
-    }
-
     char* outputFilePath = argv[2];
-    if (access(outputFilePath, F_OK) != 0) {
-        printf("error: file: %s doesn't exists", outputFilePath);
-
-        return 0;
-    }
 
     Dict words = dictCreate(free);
 
@@ -62,7 +49,7 @@ int main(int argc, char* argv[])
     csvPrintDict(words, (String(*)(void*))dictValueFormatter, outputFile);
     fclose(outputFile);
 
-    dictFree(words, free);
+    dictFree(words);
 
     return 0;
 }
