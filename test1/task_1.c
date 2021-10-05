@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,13 +80,25 @@ void vectorPushback(Vector* vector, int data)
     vector->tail = newNode;
 }
 
-void vectorPrint(Vector* list, FILE* destination)
+void vectorPrint(Vector* vector, FILE* destination)
 {
-    Node* currentNode = list->head;
+    Node* currentNode = vector->head;
     while (currentNode) {
         fprintf(destination, "%d ", currentNode->data);
         currentNode = currentNode->next;
     }
+}
+
+double vectorLength(Vector* vector) {
+    int squaresSum = 0;
+
+    Node* currentNode = vector->head;
+    while (currentNode) {
+        squaresSum += currentNode->data * currentNode->data;
+        currentNode = currentNode->next;
+    }
+
+    return sqrt(squaresSum);
 }
 
 Vector* vectorPlus(Vector* leftOperand, Vector* rightOperand)
@@ -164,6 +177,9 @@ int main(int argc, char* argv[])
 
     Vector* vector2 = vectorCreate();
     readVector(vector2, inputFile);
+
+    printf("Vector1 length: %f\n", vectorLength(vector1));
+    printf("Vector2 length: %f\n", vectorLength(vector2));
 
     Vector* vectorSum = vectorPlus(vector1, vector2);
     printf("Vectors sum: ");
