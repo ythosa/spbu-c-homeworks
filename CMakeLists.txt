@@ -20,4 +20,5 @@ add_executable(task_1.4 ./1.introduction/task_4.c)
 add_executable(task_1.5 ./1.introduction/task_5.c)
 
 add_executable(test_1task_1 ./test1/task_1.c)
+target_link_libraries(test_1task_1 m)
 target_link_libraries(test_1task_1 dataStructures)
