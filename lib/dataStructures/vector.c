@@ -1,8 +1,3 @@
-#include <math.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "vector.h"
 
 typedef struct Node {

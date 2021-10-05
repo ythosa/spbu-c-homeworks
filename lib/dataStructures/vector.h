@@ -1,6 +1,11 @@
 #ifndef SPBU_C_HOMEWORKS_VECTOR_H
 #define SPBU_C_HOMEWORKS_VECTOR_H
 
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct Vector Vector;
 
 Vector* vectorCreate();
