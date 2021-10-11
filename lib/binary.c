@@ -1,4 +1,5 @@
-#include "math.h"
+#include <math.h>
+
 #include "binary.h"
 
 #define BITS_IN_BYTE 8
