@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-long multiplyNumbers(leftOperand, rightOperand)
+int multiplyNumbers(leftOperand, rightOperand)
 {
-    short sign = (leftOperand >= 0) ^ (rightOperand >= 0) ? 1 : -1;
+    int sign = ((leftOperand < 0) ^ (rightOperand < 0)) ? -1 : 1;
     leftOperand = abs(leftOperand);
     rightOperand = abs(rightOperand);
 
-    unsigned int result = 0;
+    int result = 0;
     while (rightOperand != 0) {
         if (rightOperand & 1)
             result += leftOperand;
@@ -28,5 +28,5 @@ int main()
     printf("Input second number: ");
     scanf("%d", &secondNumber);
 
-    printf("Multiply result: %ld", multiplyNumbers(firstNumber, secondNumber));
+    printf("Multiply result: %d", multiplyNumbers(firstNumber, secondNumber));
 }
