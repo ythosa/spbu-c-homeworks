@@ -1,9 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-unsigned int multiplyNumbers(leftOperand, rightOperand)
+long multiplyNumbers(leftOperand, rightOperand)
 {
-    unsigned int result = 0;
+    short sign = (leftOperand >= 0) ^ (rightOperand >= 0) ? 1 : -1;
+    leftOperand = abs(leftOperand);
+    rightOperand = abs(rightOperand);
 
+    unsigned int result = 0;
     while (rightOperand != 0) {
         if (rightOperand & 1)
             result += leftOperand;
@@ -11,18 +15,18 @@ unsigned int multiplyNumbers(leftOperand, rightOperand)
         rightOperand >>= 1;
     }
 
-    return result;
+    return sign * result;
 }
 
 int main()
 {
-    unsigned short firstNumber = 0;
+    int firstNumber = 0;
     printf("Input first number: ");
     scanf("%d", &firstNumber);
 
-    unsigned short secondNumber = 0;
+    int secondNumber = 0;
     printf("Input second number: ");
     scanf("%d", &secondNumber);
 
-    printf("Multiply result: %d", multiplyNumbers(4, 5));
+    printf("Multiply result: %ld", multiplyNumbers(firstNumber, secondNumber));
 }
