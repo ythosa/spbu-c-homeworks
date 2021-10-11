@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int multiplyNumbers(leftOperand, rightOperand)
+int multiplyNumbers(int leftOperand, int rightOperand)
 {
     int sign = ((leftOperand < 0) ^ (rightOperand < 0)) ? -1 : 1;
     leftOperand = abs(leftOperand);
