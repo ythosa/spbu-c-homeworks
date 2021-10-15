@@ -285,3 +285,40 @@ bool listReplaceSequence(
 
     return listInsertSequence(list, sequenceReplaceWith, indexFrom, copyNodeData);
 }
+
+struct ListIterator {
+    List list;
+    node_t* currentNode;
+};
+
+ListIterator listIteratorCreate(List list) {
+    ListIterator listIterator = malloc(sizeof(ListIterator));
+
+    listIterator->list = list;
+    listIterator->currentNode = NULL;
+
+    return listIterator;
+}
+
+void listIteratorFree(ListIterator listIterator) {
+    free(listIterator);
+}
+
+void* listIteratorGetNext(ListIterator listIterator) {
+    if (!listIterator->currentNode) {
+        listIterator->currentNode = listIterator->list->head;
+
+        return listIterator->currentNode->data;
+    }
+
+    listIterator->currentNode = listIterator->currentNode->next;
+
+    return listIterator->currentNode->data;
+}
+
+bool listIteratorHasMore(ListIterator listIterator) {
+    if (!listIterator->currentNode)
+        return true;
+
+    return listIterator->currentNode->next;
+}

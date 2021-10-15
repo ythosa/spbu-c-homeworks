@@ -3,7 +3,7 @@
 #define SPBU_C_HOMEWORKS_LIST_H
 
 /* A List is a reference type.
- * You should use listFree to free up the String memory. */
+ * You should use listFree to free up the List memory. */
 typedef struct List* List;
 
 /* Creates empty List. */
@@ -61,5 +61,21 @@ bool listReplaceSequence(
     List sequenceReplaceWith,
     bool (*compareNodeData)(void*, void*),
     void* (*copyNodeData)(void*));
+
+/* A ListIterator is a reference type.
+ * You should use listFree to free up the ListIterator memory. */
+typedef struct ListIterator* ListIterator;
+
+/* Creates list iterator for list. */
+ListIterator listIteratorCreate(List list);
+
+/* Free up list iterator memory. */
+void listIteratorFree(ListIterator listIterator);
+
+/* Returns next element of list. */
+void* listIteratorGetNext(ListIterator listIterator);
+
+/* Returns true if list has next element, otherwise - false. */
+bool listIteratorHasMore(ListIterator listIterator);
 
 #endif // SPBU_C_HOMEWORKS_LIST_H
