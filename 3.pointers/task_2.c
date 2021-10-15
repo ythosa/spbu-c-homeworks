@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "../lib/dataStructures/list.h"
 
@@ -9,31 +8,12 @@
 #define INSERT_COMMAND "INSERT"
 #define REPLACE_COMMAND "REPLACE"
 
+#define MAX_COMMAND_LENGTH 8
 #define MAX_SEQUENCE_LENGTH 128
-
-enum Command {
-    Delete,
-    Insert,
-    Replace,
-    Unknown
-};
-
-enum CommandStatusCode {
-    Success,
-    DeleteError,
-    InsertError,
-    ReplaceError,
-    UnknownCommandTypeError
-};
 
 String charPointerToString(const char* c)
 {
     return stringPush(stringDup(""), *c);
-}
-
-char charPointerToChar(const char* c)
-{
-    return *c;
 }
 
 bool charPointersComparator(const char* c1, const char* c2)
@@ -48,98 +28,89 @@ char* charPointerCopy(const char* c)
     return new;
 }
 
-void readSeqToList(List sequence, FILE* inputStream)
+void readSeqToList(List sequence, char* buffer, FILE* inputStream)
 {
-    char buffer[MAX_SEQUENCE_LENGTH] = "";
     fscanf(inputStream, "%s", buffer);
 
-    for (int i = 0; i < strlen(buffer); i++) {
-        char* c1 = malloc(sizeof(char));
-        *c1 = buffer[i];
-        listPushback(sequence, c1);
+    for (char* pointer = buffer; *pointer; pointer++) {
+        char* symbol = malloc(sizeof(char));
+        *symbol = *pointer;
+        listPushback(sequence, symbol);
     }
 }
 
 String readCommand(FILE* inputStream)
 {
-    List command = listCreate(free);
-    readSeqToList(command, inputStream);
-    String result = listToString(command, charPointerToChar);
-    listFree(command);
+    char buffer[MAX_COMMAND_LENGTH] = "";
+    fscanf(inputStream, "%s", buffer);
 
-    return result;
+    return stringDup(buffer);
 }
 
-size_t identifyCommand(String command)
+typedef struct Command {
+    String name;
+    bool (*run)(List, List, List);
+} Command;
+
+Command* commandCreate(String name, bool (*run)(List, List, List))
 {
-    size_t commandType = Unknown;
+    Command* command = malloc(sizeof(Command));
 
-    String deleteCommand = stringDup(DELETE_COMMAND);
-    String insertCommand = stringDup(INSERT_COMMAND);
-    String replaceCommand = stringDup(REPLACE_COMMAND);
+    command->name = name;
+    command->run = run;
 
-    if (stringCmp(command, deleteCommand) == 0)
-        commandType = Delete;
-    else if (stringCmp(command, insertCommand) == 0)
-        commandType = Insert;
-    else if (stringCmp(command, replaceCommand) == 0)
-        commandType = Replace;
-
-    stringFree(deleteCommand);
-    stringFree(insertCommand);
-    stringFree(replaceCommand);
-
-    return commandType;
+    return command;
 }
 
-size_t applyCommandToSequence(List sequence, size_t commandType, List leftOperand, List rightOperand)
+void commandFree(Command* command)
 {
-    switch (commandType) {
-    case Delete:
-        if (!listDeleteFromSequenceBySequence(
-                sequence, leftOperand, rightOperand, charPointersComparator))
-            return DeleteError;
-        break;
-    case Insert:
-        if (!listInsertSequenceAfterSequence(
-                sequence, leftOperand, rightOperand, charPointersComparator, charPointerCopy))
-            return InsertError;
-        break;
-    case Replace:
-        if (!listReplaceSequence(
-                sequence, leftOperand, rightOperand, charPointersComparator, charPointerCopy))
-            return ReplaceError;
-        break;
-    case Unknown:
-        return UnknownCommandTypeError;
-    }
-
-    return Success;
+    stringFree(command->name);
+    free(command);
 }
 
-void handleError(size_t errorCode, List sequence, List leftOperand, List rightOperand)
+bool runDeleteCommand(List sequence, List leftOperand, List rightOperand)
 {
-    if (errorCode == UnknownCommandTypeError) {
-        printf("Unknown command\n");
-    }
+    return listDeleteFromSequenceBySequence(sequence, leftOperand, rightOperand,
+        (bool(*)(void*, void*))charPointersComparator);
+}
 
-    switch (errorCode) {
-    case DeleteError:
-        printf("Failed to delete in: ");
-        break;
-    case InsertError:
-        printf("Failed to insert in: ");
-        break;
-    case ReplaceError:
-        printf("Failed to replace in: ");
-        break;
-    }
+bool runInsertCommand(List sequence, List leftOperand, List rightOperand)
+{
+    return listInsertSequenceAfterSequence(sequence, leftOperand, rightOperand,
+        (bool(*)(void*, void*))charPointersComparator, (void* (*)(void*))charPointerCopy);
+}
 
-    listPrint(sequence, charPointerToString, NULL, stdout);
+bool runReplaceCommand(List sequence, List leftOperand, List rightOperand)
+{
+    return listReplaceSequence(sequence, leftOperand, rightOperand,
+        (bool(*)(void*, void*))charPointersComparator, (void* (*)(void*))charPointerCopy);
+}
+
+List getCommands()
+{
+    Command* delete = commandCreate(stringDup(DELETE_COMMAND), runDeleteCommand);
+    Command* insert = commandCreate(stringDup(INSERT_COMMAND), runInsertCommand);
+    Command* replace = commandCreate(stringDup(REPLACE_COMMAND), runReplaceCommand);
+
+    List commands = listCreate((void(*)(void*))commandFree);
+
+    listPushback(commands, delete);
+    listPushback(commands, insert);
+    listPushback(commands, replace);
+
+    return commands;
+}
+
+void handleRunCommandError(String commandName, List sequence, List leftOperand, List rightOperand)
+{
+    printf("failed to ");
+    stringPrint(commandName, stdout);
+    printf("in: ");
+    listPrint(sequence, (String(*)(void*))charPointerToString, NULL, stdout);
     printf(" left operand: ");
-    listPrint(leftOperand, charPointerToString, NULL, stdout);
+    listPrint(leftOperand, (String(*)(void*))charPointerToString, NULL, stdout);
     printf(" right operand: ");
-    listPrint(rightOperand, charPointerToString, NULL, stdout);
+    listPrint(rightOperand, (String(*)(void*))charPointerToString, NULL, stdout);
     printf("\n");
 }
 
@@ -166,34 +137,37 @@ int main(int argc, char* argv[])
     int sequenceLength = 0;
     fscanf(inputFile, "%d", &sequenceLength);
 
+    char* buffer = calloc(sizeof(char), sequenceLength);
     List sequence = listCreate(free);
-    readSeqToList(sequence, inputFile);
+    readSeqToList(sequence, buffer, inputFile);
+    free(buffer);
+
+    buffer = calloc(sizeof(char), MAX_SEQUENCE_LENGTH);
 
     int operationsLength = 0;
     fscanf(inputFile, "%d", &operationsLength);
 
+    List commands = getCommands();
     for (int i = 0; i < operationsLength; i++) {
-        String command = readCommand(inputFile);
-        size_t commandType = identifyCommand(command);
-        stringFree(command);
+        String userCommand = readCommand(inputFile);
+        stringFree(userCommand);
 
         List leftOperand = listCreate(free);
-        readSeqToList(leftOperand, inputFile);
+        readSeqToList(leftOperand, buffer, inputFile);
         List rightOperand = listCreate(free);
-        readSeqToList(rightOperand, inputFile);
+        readSeqToList(rightOperand, buffer, inputFile);
 
-        size_t statusCode = applyCommandToSequence(sequence, commandType, leftOperand, rightOperand);
-        if (statusCode != Success) {
-            handleError(statusCode, sequence, leftOperand, rightOperand);
+        ListIterator commandsIterator = listIteratorCreate(commands);
+        while (listIteratorHasMore(commandsIterator)) {
+            Command* command = listIteratorGetNext(commandsIterator);
+            if (!stringCmp(userCommand, command->name))
+                if (!command->run(sequence, leftOperand, rightOperand)) {
+                    handleRunCommandError(command->name, sequence, leftOperand, rightOperand);
 
-            listFree(leftOperand);
-            listFree(rightOperand);
-            listFree(sequence);
-            fclose(inputFile);
-            fclose(outputFile);
-
-            exit(0);
+                    return 0;
+                }
         }
+        listIteratorFree(commandsIterator);
 
         listPrint(sequence, (String(*)(void*))charPointerToString, NULL, outputFile);
         fprintf(outputFile, "\n");
@@ -202,6 +176,8 @@ int main(int argc, char* argv[])
         listFree(rightOperand);
     }
 
+    free(buffer);
+    listFree(commands);
     listFree(sequence);
     fclose(inputFile);
     fclose(outputFile);
