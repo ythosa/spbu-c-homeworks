@@ -33,7 +33,9 @@ int main(int argc, char* argv[])
 {
     if (argc != 3) {
         printf("invalid count of arguments. please provide "
-               "inputFile file path and outputFile file path through space");
+               "inputFile file path and outputFile file path through space\n");
+
+        return 0;
     }
 
     char* inputFilePath = argv[1];
@@ -42,6 +44,12 @@ int main(int argc, char* argv[])
     Dict words = dictCreate(free);
 
     FILE* inputFile = fopen(inputFilePath, "r");
+    if (!inputFile) {
+        printf("invalid input file path: %s\n", inputFilePath);
+
+        return 0;
+    }
+    
     readWordsToDict(inputFile, words);
     fclose(inputFile);
 

@@ -132,6 +132,7 @@ void handleError(size_t errorCode, List sequence, List leftOperand, List rightOp
         break;
     case ReplaceError:
         printf("Failed to replace in: ");
+        break;
     }
 
     listPrint(sequence, charPointerToString, NULL, stdout);
@@ -146,11 +147,18 @@ int main(int argc, char* argv[])
 {
     if (argc != 3) {
         printf("invalid count of arguments. please provide "
-               "inputFile file path and outputFile file path through space");
+               "inputFile file path and outputFile file path through space\n");
+
+        return 0;
     }
 
     char* inputFilePath = argv[1];
     FILE* inputFile = fopen(inputFilePath, "r");
+    if (!inputFile) {
+        printf("invalid input file path: %s\n", inputFilePath);
+
+        return 0;
+    }
 
     char* outputFilePath = argv[2];
     FILE* outputFile = fopen(outputFilePath, "w");

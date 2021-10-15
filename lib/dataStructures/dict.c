@@ -85,6 +85,20 @@ void dictFree(Dict dict)
     free(dict);
 }
 
+void dictShallowFree(Dict dict)
+{
+    for (int i = 0; i < dict->bufferSize; i++) {
+        element_t* next = NULL;
+        for (element_t* node = dict->table[i]; node; node = next) {
+            next = node->next;
+            free(node);
+        }
+    }
+
+    free(dict->table);
+    free(dict);
+}
+
 int dictGetBufferSize(Dict dict)
 {
     return dict->bufferSize;
@@ -134,7 +148,7 @@ static void dictGrow(Dict dict)
             dictPut(newDict, element->key, element->value);
 
     swapDicts(dict, newDict);
-    dictFree(newDict);
+    dictShallowFree(newDict);
 }
 
 element_t* dictFind(Dict dict, String key)
@@ -149,19 +163,17 @@ element_t* dictFind(Dict dict, String key)
 void* dictGet(Dict dict, String key)
 {
     element_t* element = dictFind(dict, key);
-    if (element)
-        return element->value;
 
-    return NULL;
+    return element ? element->value : NULL;
 }
 
 void dictPut(Dict dict, String key, void* value)
 {
     assert(key);
 
-    element_t* elementWithSuchKey = dictGet(dict, key);
-    if (elementWithSuchKey) {
-        elementWithSuchKey->value = value;
+    element_t* element = dictGet(dict, key);
+    if (element) {
+        element->value = value;
 
         return;
     }
@@ -179,8 +191,7 @@ void dictDelete(Dict dict, String key)
     unsigned long binIndex = dictCalculateBinIndex(dict, key);
     for (element_t** nextPointer = &dict->table[binIndex]; *nextPointer; nextPointer = &((*nextPointer)->next))
         if (!stringCmp((*nextPointer)->key, key)) {
-            element_t* nodeToDelete = NULL;
-            nodeToDelete = *nextPointer;
+            element_t* nodeToDelete = *nextPointer;
             *nextPointer = nodeToDelete->next;
             elementFree(nodeToDelete, dict->freeDictValue);
 
