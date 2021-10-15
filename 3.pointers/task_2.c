@@ -114,6 +114,51 @@ void handleRunCommandError(String commandName, List sequence, List leftOperand, 
     printf("\n");
 }
 
+void recoverDNA(List sequence, int operationsLength, FILE* inputFile, FILE* outputFile)
+{
+    char* readSequenceBuffer = calloc(sizeof(char), MAX_SEQUENCE_LENGTH);
+    List commands = getCommands();
+    for (int i = 0; i < operationsLength; i++) {
+        String userCommand = readCommand(inputFile);
+        List leftOperand = listCreate(free);
+        readSeqToList(leftOperand, readSequenceBuffer, inputFile);
+        List rightOperand = listCreate(free);
+        readSeqToList(rightOperand, readSequenceBuffer, inputFile);
+
+        ListIterator commandsIterator = listIteratorCreate(commands);
+        while (listIteratorHasMore(commandsIterator)) {
+            Command* command = listIteratorGetNext(commandsIterator);
+            if (!stringCmp(userCommand, command->name)) {
+                if (!command->run(sequence, leftOperand, rightOperand)) {
+                    handleRunCommandError(command->name, sequence, leftOperand, rightOperand);
+
+                    listIteratorFree(commandsIterator);
+
+                    stringFree(userCommand);
+                    listFree(leftOperand);
+                    listFree(rightOperand);
+
+                    free(readSequenceBuffer);
+                    listFree(commands);
+
+                    return;
+                }
+            }
+        }
+        listIteratorFree(commandsIterator);
+
+        stringFree(userCommand);
+        listFree(leftOperand);
+        listFree(rightOperand);
+
+        listPrint(sequence, (String(*)(void*))charPointerToString, NULL, outputFile);
+        fprintf(outputFile, "\n");
+    }
+
+    listFree(commands);
+    free(readSequenceBuffer);
+}
+
 int main(int argc, char* argv[])
 {
     if (argc != 3) {
@@ -137,47 +182,16 @@ int main(int argc, char* argv[])
     int sequenceLength = 0;
     fscanf(inputFile, "%d", &sequenceLength);
 
-    char* buffer = calloc(sizeof(char), sequenceLength);
+    char* sequenceBuffer = calloc(sizeof(char), sequenceLength);
     List sequence = listCreate(free);
-    readSeqToList(sequence, buffer, inputFile);
-    free(buffer);
-
-    buffer = calloc(sizeof(char), MAX_SEQUENCE_LENGTH);
+    readSeqToList(sequence, sequenceBuffer, inputFile);
+    free(sequenceBuffer);
 
     int operationsLength = 0;
     fscanf(inputFile, "%d", &operationsLength);
 
-    List commands = getCommands();
-    for (int i = 0; i < operationsLength; i++) {
-        String userCommand = readCommand(inputFile);
-        stringFree(userCommand);
+    recoverDNA(sequence, operationsLength, inputFile, outputFile);
 
-        List leftOperand = listCreate(free);
-        readSeqToList(leftOperand, buffer, inputFile);
-        List rightOperand = listCreate(free);
-        readSeqToList(rightOperand, buffer, inputFile);
-
-        ListIterator commandsIterator = listIteratorCreate(commands);
-        while (listIteratorHasMore(commandsIterator)) {
-            Command* command = listIteratorGetNext(commandsIterator);
-            if (!stringCmp(userCommand, command->name))
-                if (!command->run(sequence, leftOperand, rightOperand)) {
-                    handleRunCommandError(command->name, sequence, leftOperand, rightOperand);
-
-                    return 0;
-                }
-        }
-        listIteratorFree(commandsIterator);
-
-        listPrint(sequence, (String(*)(void*))charPointerToString, NULL, outputFile);
-        fprintf(outputFile, "\n");
-
-        listFree(leftOperand);
-        listFree(rightOperand);
-    }
-
-    free(buffer);
-    listFree(commands);
     listFree(sequence);
     fclose(inputFile);
     fclose(outputFile);
