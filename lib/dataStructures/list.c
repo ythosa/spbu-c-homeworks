@@ -109,18 +109,24 @@ void listPushback(List list, void* data)
 
 String listToString(List list, char (*convertElementToChar)(void*))
 {
-    String result = stringDup("");
+    char* resultBuffer = calloc(sizeof(char), list->size + 1);
 
     node_t* currentNode = list->head;
+    int i = 0;
     while (currentNode) {
-        result = stringPush(result, convertElementToChar(currentNode->data));
+        resultBuffer[i] = convertElementToChar(currentNode->data);
         currentNode = currentNode->next;
+        i++;
     }
+    resultBuffer[list->size] = '\0';
 
-    return result;
+    String resultString = stringDup(resultBuffer);
+    free(resultBuffer);
+
+    return resultString;
 }
 
-void listPrint(List list, String (*formatElementData)(void*), char* separator, FILE* destination)
+void listPrint(List list, String (*formatElementData)(void*), String separator, FILE* destination)
 {
     node_t* currentNode = list->head;
     while (currentNode) {
@@ -129,7 +135,7 @@ void listPrint(List list, String (*formatElementData)(void*), char* separator, F
         stringFree(s);
 
         if (separator)
-            fprintf(destination, "%s", separator);
+            stringPrint(separator, destination);
 
         currentNode = currentNode->next;
     }
@@ -157,20 +163,28 @@ int listSubsequenceIndex(List list, List subsequence, bool (*compareNodeData)(vo
     if (subsequence->size > list->size)
         return -1;
 
-    for (int i = 0; i < list->size - subsequence->size; i++) {
+    node_t* listCurrentNode = list->head;
+    int i = 0;
+    while (listCurrentNode) {
         bool isFound = true;
-        for (int j = 0; j < subsequence->size; j++) {
-            node_t* li = listGet(list, i + j);
-            node_t* si = listGet(subsequence, j);
-
-            if (!compareNodeData(li->data, si->data)) {
+        node_t* subsequenceCurrentNode = subsequence->head;
+        node_t* listCurrentNodeCopy = listCurrentNode;
+        while (subsequenceCurrentNode && listCurrentNodeCopy) {
+            if (!compareNodeData(listCurrentNodeCopy->data, subsequenceCurrentNode->data)) {
                 isFound = false;
+
                 break;
             }
+
+            subsequenceCurrentNode = subsequenceCurrentNode->next;
+            listCurrentNodeCopy = listCurrentNodeCopy->next;
         }
 
         if (isFound)
             return i;
+
+        listCurrentNode = listCurrentNode->next;
+        i++;
     }
 
     return -1;
@@ -291,7 +305,8 @@ struct ListIterator {
     node_t* currentNode;
 };
 
-ListIterator listIteratorCreate(List list) {
+ListIterator listIteratorCreate(List list)
+{
     ListIterator listIterator = malloc(sizeof(ListIterator));
 
     listIterator->list = list;
@@ -300,11 +315,13 @@ ListIterator listIteratorCreate(List list) {
     return listIterator;
 }
 
-void listIteratorFree(ListIterator listIterator) {
+void listIteratorFree(ListIterator listIterator)
+{
     free(listIterator);
 }
 
-void* listIteratorGetNext(ListIterator listIterator) {
+void* listIteratorGetNext(ListIterator listIterator)
+{
     if (!listIterator->currentNode) {
         listIterator->currentNode = listIterator->list->head;
 
@@ -316,7 +333,8 @@ void* listIteratorGetNext(ListIterator listIterator) {
     return listIterator->currentNode->data;
 }
 
-bool listIteratorHasMore(ListIterator listIterator) {
+bool listIteratorHasMore(ListIterator listIterator)
+{
     if (!listIterator->currentNode)
         return true;
 

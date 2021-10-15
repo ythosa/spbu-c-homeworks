@@ -190,6 +190,18 @@ int main(int argc, char* argv[])
     int operationsLength = 0;
     fscanf(inputFile, "%d", &operationsLength);
 
+
+    /*/////////////////////*/
+//    char* readSequenceBuffer = calloc(sizeof(char), MAX_SEQUENCE_LENGTH);
+//    String userCommand = readCommand(inputFile);
+//    List leftOperand = listCreate(free);
+//    readSeqToList(leftOperand, readSequenceBuffer, inputFile);
+//
+//    printf("%d\n", listSubsequenceIndex(sequence, leftOperand, charPointersComparator));
+//
+//    return 0;
+    /*/////////////////////*/
+
     recoverDNA(sequence, operationsLength, inputFile, outputFile);
 
     listFree(sequence);

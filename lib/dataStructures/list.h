@@ -20,7 +20,7 @@ int listSize(List list);
 
 /* Prints List to `destination` output in format "<e1><separator><e2><separator>...".
  * You need to provide a function that formats Element to String and elements separator. */
-void listPrint(List list, String (*formatElementData)(void*), char* separator, FILE* destination);
+void listPrint(List list, String (*formatElementData)(void*), String separator, FILE* destination);
 
 /* Converts List to String.
  * You need to provide a function that formats Element to char. */
