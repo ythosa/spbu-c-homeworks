@@ -116,16 +116,24 @@ void handleRunCommandError(String commandName, List sequence, List leftOperand, 
     printf("\n");
 }
 
+void freeMemoryForExecuteCommand(ListIterator commandsIterator, String userCommand, List leftOperand, List rightOperand)
+{
+    listIteratorFree(commandsIterator);
+    stringFree(userCommand);
+    listFree(leftOperand);
+    listFree(rightOperand);
+}
+
 void recoverDNA(List sequence, int operationsLength, FILE* inputFile, FILE* outputFile)
 {
-    char* readSequenceBuffer = calloc(sizeof(char), MAX_SEQUENCE_LENGTH);
+    char* sequenceBuffer = calloc(sizeof(char), MAX_SEQUENCE_LENGTH);
     List commands = getCommands();
     for (int i = 0; i < operationsLength; i++) {
         String userCommand = readCommand(inputFile);
         List leftOperand = listCreate(free);
-        readSeqToList(leftOperand, readSequenceBuffer, inputFile);
+        readSeqToList(leftOperand, sequenceBuffer, inputFile);
         List rightOperand = listCreate(free);
-        readSeqToList(rightOperand, readSequenceBuffer, inputFile);
+        readSeqToList(rightOperand, sequenceBuffer, inputFile);
 
         ListIterator commandsIterator = listIteratorCreate(commands);
         while (listIteratorHasMore(commandsIterator)) {
@@ -134,31 +142,22 @@ void recoverDNA(List sequence, int operationsLength, FILE* inputFile, FILE* outp
                 if (!command->run(sequence, leftOperand, rightOperand)) {
                     handleRunCommandError(command->name, sequence, leftOperand, rightOperand);
 
-                    listIteratorFree(commandsIterator);
-
-                    stringFree(userCommand);
-                    listFree(leftOperand);
-                    listFree(rightOperand);
-
-                    free(readSequenceBuffer);
+                    freeMemoryForExecuteCommand(commandsIterator, userCommand, leftOperand, rightOperand);
                     listFree(commands);
+                    free(sequenceBuffer);
 
                     return;
                 }
             }
         }
-        listIteratorFree(commandsIterator);
-
-        stringFree(userCommand);
-        listFree(leftOperand);
-        listFree(rightOperand);
+        freeMemoryForExecuteCommand(commandsIterator, userCommand, leftOperand, rightOperand);
 
         listPrint(sequence, (String(*)(void*))charPointerToString, NULL, outputFile);
         fprintf(outputFile, "\n");
     }
 
     listFree(commands);
-    free(readSequenceBuffer);
+    free(sequenceBuffer);
 }
 
 int main(int argc, char* argv[])
@@ -177,7 +176,6 @@ int main(int argc, char* argv[])
 
         return 0;
     }
-
     char* outputFilePath = argv[2];
     FILE* outputFile = fopen(outputFilePath, "w");
 
