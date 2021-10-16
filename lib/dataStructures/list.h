@@ -33,8 +33,8 @@ List listCopy(List list, void* (*copyNodeData)(void*));
  * or `-1` if subsequence not found. */
 int listSubsequenceIndex(List list, List subsequence, bool (*compareNodeData)(void*, void*));
 
-/* Deletes nodes from List. Starts from `fromIndex` ends `byIndex` (not include). */
-bool listDeleteNodes(List l, int fromIndex, int byIndex);
+/* Deletes nodes from List. Starts from `fromIndex` ends `toIndex` (not include). */
+bool listDeleteNodes(List list, int fromIndex, int toIndex);
 
 /* Inserts List into List position. Need to provide a function that copies Node data. */
 bool listInsertSequence(List list, List sequence, int position, void* (*copyNodeData)(void*));
