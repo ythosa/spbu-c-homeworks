@@ -38,11 +38,6 @@ void* elementGetValue(Element element)
     return element->value;
 }
 
-Element elementGetNext(Element element)
-{
-    return element->next;
-}
-
 #define INITIAL_SIZE (1024)
 #define GROWTH_FACTOR (2)
 #define MAX_LOAD_FACTOR (1)
@@ -97,11 +92,6 @@ void dictShallowFree(Dict dict)
 
     free(dict->table);
     free(dict);
-}
-
-int dictGetBufferSize(Dict dict)
-{
-    return dict->bufferSize;
 }
 
 int dictGetSize(Dict dict)
@@ -201,16 +191,17 @@ void dictDelete(Dict dict, String key)
 
 void dictPrint(Dict dict, String (*convertElementValueToString)(void*), FILE* dst)
 {
-    for (int i = 0; i < dictGetBufferSize(dict); i++)
-        for (element_t* element = dictGetElementsByIndex(dict, i); element; element = elementGetNext(element)) {
-            fprintf(dst, "key: ");
-            stringPrint(elementGetKey(element), dst);
-            fprintf(dst, " value: ");
-            String s = convertElementValueToString(elementGetValue(element));
-            stringPrint(s, dst);
-            stringFree(s);
-            fprintf(dst, "\n");
-        }
+    DictIterator dictIterator = dictIteratorCreate(dict);
+    for (Element element = dictIteratorGetNext(dictIterator); element; element = dictIteratorGetNext(dictIterator)) {
+        fprintf(dst, "key: ");
+        stringPrint(elementGetKey(element), dst);
+        fprintf(dst, " value: ");
+        String s = convertElementValueToString(elementGetValue(element));
+        stringPrint(s, dst);
+        stringFree(s);
+        fprintf(dst, "\n");
+    }
+    dictIteratorFree(dictIterator);
 }
 
 typedef struct DictIterator {

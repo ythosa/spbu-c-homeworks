@@ -13,9 +13,6 @@ String elementGetKey(Element element);
 /* Returns Element value. */
 void* elementGetValue(Element element);
 
-/* Returns next Element. */
-Element elementGetNext(Element element);
-
 /* A dictionary is a reference type.
  * You should use dictFree to free up the dictionary memory. */
 typedef struct Dict* Dict;
@@ -27,9 +24,6 @@ Dict dictCreate(void (*freeElementValue)(void*));
 /* Free dictionary memory.
  * You need to provide a function to free up the memory of dictionary values. */
 void dictFree(Dict dict);
-
-/* Returns bufferSize size of dictionary. */
-int dictGetBufferSize(Dict dict);
 
 /* Returns dictionary size. */
 int dictGetSize(Dict dict);

@@ -50,11 +50,13 @@ String readCommand(FILE* inputStream)
 typedef struct Command {
     String name;
     bool (*run)(List, List, List);
-} Command;
+} command_t;
 
-Command* commandCreate(String name, bool (*run)(List, List, List))
+typedef command_t* Command;
+
+Command commandCreate(String name, bool (*run)(List, List, List))
 {
-    Command* command = malloc(sizeof(Command));
+    Command command = malloc(sizeof(command_t));
 
     command->name = name;
     command->run = run;
@@ -62,7 +64,7 @@ Command* commandCreate(String name, bool (*run)(List, List, List))
     return command;
 }
 
-void commandFree(Command* command)
+void commandFree(Command command)
 {
     stringFree(command->name);
     free(command);
@@ -88,9 +90,9 @@ bool runReplaceCommand(List sequence, List leftOperand, List rightOperand)
 
 List getCommands()
 {
-    Command* delete = commandCreate(stringDup(DELETE_COMMAND), runDeleteCommand);
-    Command* insert = commandCreate(stringDup(INSERT_COMMAND), runInsertCommand);
-    Command* replace = commandCreate(stringDup(REPLACE_COMMAND), runReplaceCommand);
+    Command delete = commandCreate(stringDup(DELETE_COMMAND), runDeleteCommand);
+    Command insert = commandCreate(stringDup(INSERT_COMMAND), runInsertCommand);
+    Command replace = commandCreate(stringDup(REPLACE_COMMAND), runReplaceCommand);
 
     List commands = listCreate((void(*)(void*))commandFree);
 
@@ -127,7 +129,7 @@ void recoverDNA(List sequence, int operationsLength, FILE* inputFile, FILE* outp
 
         ListIterator commandsIterator = listIteratorCreate(commands);
         while (listIteratorHasMore(commandsIterator)) {
-            Command* command = listIteratorGetNext(commandsIterator);
+            Command command = listIteratorGetNext(commandsIterator);
             if (!stringCmp(userCommand, command->name)) {
                 if (!command->run(sequence, leftOperand, rightOperand)) {
                     handleRunCommandError(command->name, sequence, leftOperand, rightOperand);
