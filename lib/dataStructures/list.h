@@ -63,7 +63,7 @@ bool listReplaceSequence(
     void* (*copyNodeData)(void*));
 
 /* A ListIterator is a reference type.
- * You should use listFree to free up the ListIterator memory. */
+ * You should use `listIteratorFree` to free up the `ListIterator` memory. */
 typedef struct ListIterator* ListIterator;
 
 /* Creates list iterator for list. */

@@ -53,10 +53,17 @@ void dictDelete(Dict dict, String key);
  * You need to provide a function that formats the dictionary value into a String. */
 void dictPrint(Dict dict, String (*convertElementValueToString)(void*), FILE* dst);
 
+/* A DictIterator is a reference type.
+ * You should use `dictIteratorFree` to free up the `DictIterator` memory. */
 typedef struct DictIterator* DictIterator;
+
+/* Creates iterator for dict. */
 DictIterator dictIteratorCreate(Dict dict);
+
+/* Free up dict iterator memory. */
 void dictIteratorFree(DictIterator dictIterator);
+
+/* Returns next element of dict or `NULL` if there isn't next element. */
 Element dictIteratorGetNext(DictIterator iterator);
-bool dictIteratorHasMore(DictIterator dictIterator);
 
 #endif // SPBU_C_HOMEWORKS_HASHTABLE_H
