@@ -5,16 +5,16 @@
 #define SPBU_C_HOMEWORKS_HASHTABLE_H
 
 /* Dict Element type - key/value pair. */
-typedef struct Element element_t;
+typedef struct Element* Element;
 
 /* Return Element key. */
-String elementGetKey(element_t* element);
+String elementGetKey(Element element);
 
 /* Returns Element value. */
-void* elementGetValue(element_t* element);
+void* elementGetValue(Element element);
 
 /* Returns next Element. */
-element_t* elementGetNext(element_t* element);
+Element elementGetNext(Element element);
 
 /* A dictionary is a reference type.
  * You should use dictFree to free up the dictionary memory. */
@@ -36,7 +36,7 @@ int dictGetSize(Dict dict);
 
 /* Returns Dict elements List by index.
  * Returns row with index of buffer table (linked list). */
-element_t* dictGetElementsByIndex(Dict dict, int index);
+Element dictGetElementsByIndex(Dict dict, int index);
 
 /* Insert a new key-value pair into an existing dictionary. */
 void dictPut(Dict dict, String key, void* value);
@@ -52,5 +52,11 @@ void dictDelete(Dict dict, String key);
 /* Prints dictionary into [dst] output in format "key: <key> value: <value>.
  * You need to provide a function that formats the dictionary value into a String. */
 void dictPrint(Dict dict, String (*convertElementValueToString)(void*), FILE* dst);
+
+typedef struct DictIterator* DictIterator;
+DictIterator dictIteratorCreate(Dict dict);
+void dictIteratorFree(DictIterator dictIterator);
+Element dictIteratorGetNext(DictIterator iterator);
+bool dictIteratorHasMore(DictIterator dictIterator);
 
 #endif // SPBU_C_HOMEWORKS_HASHTABLE_H

@@ -2,14 +2,14 @@
 
 void csvPrintDict(Dict dict, String (*dictValueFormatter)(void*), FILE* dst)
 {
-    for (int i = 0; i < dictGetBufferSize(dict); i++) {
-        for (element_t* e = dictGetElementsByIndex(dict, i); e != NULL; e = elementGetNext(e)) {
-            stringPrint(elementGetKey(e), dst);
-            fprintf(dst, ",");
-            String s = dictValueFormatter(elementGetValue(e));
-            stringPrint(s, dst);
-            stringFree(s);
-            fprintf(dst, "\n");
-        }
+    DictIterator dictIterator = dictIteratorCreate(dict);
+    for (Element element = dictIteratorGetNext(dictIterator); element; element = dictIteratorGetNext(dictIterator)) {
+        stringPrint(elementGetKey(element), dst);
+        fprintf(dst, ",");
+        String s = dictValueFormatter(elementGetValue(element));
+        stringPrint(s, dst);
+        stringFree(s);
+        fprintf(dst, "\n");
     }
+    dictIteratorFree(dictIterator);
 }

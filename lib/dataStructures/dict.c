@@ -4,15 +4,15 @@
 
 #include "dict.h"
 
-struct Element {
+typedef struct Element {
     struct Element* next;
     String key;
     void* value;
-};
+} element_t;
 
-static element_t* elementCreate(element_t* next, String key, void* value)
+static Element elementCreate(Element next, String key, void* value)
 {
-    element_t* node = malloc(sizeof(element_t));
+    Element node = malloc(sizeof(element_t));
 
     node->next = next;
     node->key = key;
@@ -21,24 +21,24 @@ static element_t* elementCreate(element_t* next, String key, void* value)
     return node;
 }
 
-static void elementFree(element_t* node, void (*freeElementValue)(void*))
+static void elementFree(Element node, void (*freeElementValue)(void*))
 {
     stringFree(node->key);
     freeElementValue(node->value);
     free(node);
 }
 
-String elementGetKey(element_t* element)
+String elementGetKey(Element element)
 {
     return element->key;
 }
 
-void* elementGetValue(element_t* element)
+void* elementGetValue(Element element)
 {
     return element->value;
 }
 
-element_t* elementGetNext(element_t* element)
+Element elementGetNext(Element element)
 {
     return element->next;
 }
@@ -119,8 +119,8 @@ element_t* dictGetElementsByIndex(Dict dict, int index)
 static unsigned long calculateHashOfString(String string)
 {
     uint8_t* s = stringC(string);
-    unsigned long hash = 0;
 
+    unsigned long hash = 0;
     for (unsigned const char* us = (unsigned const char*)s; *us; us++)
         hash = hash * MULTIPLIER + *us;
 
@@ -211,4 +211,41 @@ void dictPrint(Dict dict, String (*convertElementValueToString)(void*), FILE* ds
             stringFree(s);
             fprintf(dst, "\n");
         }
+}
+
+typedef struct DictIterator {
+    Dict dict;
+    int tableRowIndex;
+    element_t* currentElement;
+} dictIterator_t;
+
+DictIterator dictIteratorCreate(Dict dict)
+{
+    DictIterator dictIterator = malloc(sizeof(dictIterator_t));
+
+    dictIterator->dict = dict;
+    dictIterator->tableRowIndex = -1;
+    dictIterator->currentElement = NULL;
+
+    return dictIterator;
+}
+
+void dictIteratorFree(DictIterator dictIterator)
+{
+    free(dictIterator);
+}
+
+Element dictIteratorGetNext(DictIterator iterator)
+{
+    if (!iterator->currentElement || !iterator->currentElement->next)
+        for (++iterator->tableRowIndex; iterator->tableRowIndex < iterator->dict->bufferSize; iterator->tableRowIndex++)
+            if (dictGetElementsByIndex(iterator->dict, iterator->tableRowIndex)) {
+                iterator->currentElement = dictGetElementsByIndex(iterator->dict, iterator->tableRowIndex);
+
+                return iterator->currentElement;
+            }
+
+    iterator->currentElement = iterator->currentElement->next;
+
+    return iterator->currentElement;
 }
