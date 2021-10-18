@@ -11,9 +11,10 @@ void readWordsToDict(FILE* inputStream, Dict words)
     while (fscanf(inputStream, "%s", buffer) != EOF) {
         String key = stringDup(buffer);
         int* value = (int*)dictGet(words, key);
-        if (value)
+        if (value) {
             ++(*value);
-        else {
+            stringFree(key);
+        } else {
             value = malloc(sizeof(int));
             *value = 1;
             dictPut(words, key, value);
