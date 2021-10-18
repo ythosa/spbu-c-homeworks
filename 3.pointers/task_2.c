@@ -73,7 +73,7 @@ void commandFree(Command command)
 bool runDeleteCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listDeleteFromSequenceToSequence(sequence, leftOperand, rightOperand,
-        (bool(*)(void*, void*))charPointersComparator);
+        (bool (*)(void*, void*))charPointersComparator);
 }
 
 bool runInsertCommand(List sequence, List leftOperand, List rightOperand)
