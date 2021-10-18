@@ -146,7 +146,6 @@ node_t* listGet(List list, int position)
     return node;
 }
 
-
 int listSubsequenceIndexFromIndex(List list, int fromIndex, List subsequence, bool (*compareNodeData)(void*, void*))
 {
     if (subsequence->size > list->size && isValidListIndex(list, fromIndex))
@@ -259,12 +258,12 @@ bool listDeleteFromSequenceBySequence(
     if (indexFromWhichDeleteElements < 0)
         return false;
 
-    int indexByWhichDeleteElements =
-        listSubsequenceIndexFromIndex(
-            list,
-            indexFromWhichDeleteElements + fromSequence->size,
-            bySequence,
-            compareNodeData) + bySequence->size;
+    int indexByWhichDeleteElements = listSubsequenceIndexFromIndex(
+                                         list,
+                                         indexFromWhichDeleteElements + fromSequence->size,
+                                         bySequence,
+                                         compareNodeData)
+        + bySequence->size;
     if (indexByWhichDeleteElements < 0)
         return false;
 
@@ -302,14 +301,14 @@ bool listReplaceSequence(
     return listInsertSequence(list, sequenceReplaceWith, indexFrom, copyNodeData);
 }
 
-struct ListIterator {
+typedef struct ListIterator {
     List list;
     node_t* currentNode;
-};
+} listIterator_t;
 
 ListIterator listIteratorCreate(List list)
 {
-    ListIterator listIterator = malloc(sizeof(ListIterator));
+    ListIterator listIterator = malloc(sizeof(listIterator_t));
 
     listIterator->list = list;
     listIterator->currentNode = NULL;

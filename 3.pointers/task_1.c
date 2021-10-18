@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 
         return 0;
     }
-    
+
     readWordsToDict(inputFile, words);
     fclose(inputFile);
 

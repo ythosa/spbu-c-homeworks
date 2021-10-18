@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
     int sequenceLength = 0;
     fscanf(inputFile, "%d", &sequenceLength);
 
-    char* sequenceBuffer = calloc(sizeof(char), sequenceLength);
+    char* sequenceBuffer = calloc(sizeof(char), sequenceLength + 1);
     List sequence = listCreate(free);
     readSeqToList(sequence, sequenceBuffer, inputFile);
     free(sequenceBuffer);
