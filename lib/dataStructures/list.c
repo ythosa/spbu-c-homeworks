@@ -206,12 +206,14 @@ bool listDeleteNodes(List list, int fromIndex, int toIndex)
     }
 
     if (!beforeFromNode && !nextNode) {
+        // head and tail deleted -> empty list
         list->head = NULL;
         list->tail = NULL;
     } else if (!beforeFromNode) {
         // head deleted
         list->head = nextNode;
     } else if (!nextNode) {
+        // tail deleted
         beforeFromNode->next = NULL;
         list->tail = beforeFromNode;
     } else
@@ -248,26 +250,26 @@ bool listInsertSequence(List list, List sequence, int position, void* (*copyNode
     return true;
 }
 
-bool listDeleteFromSequenceBySequence(
+bool listDeleteFromSequenceToSequence(
     List list,
     List fromSequence,
-    List bySequence,
+    List toSequence,
     bool (*compareNodeData)(void*, void*))
 {
     int indexFromWhichDeleteElements = listSubsequenceIndex(list, fromSequence, compareNodeData);
     if (indexFromWhichDeleteElements < 0)
         return false;
 
-    int indexByWhichDeleteElements = listSubsequenceIndexFromIndex(
+    int indexToWhichDeleteElements = listSubsequenceIndexFromIndex(
                                          list,
                                          indexFromWhichDeleteElements + fromSequence->size,
-                                         bySequence,
+                                         toSequence,
                                          compareNodeData)
-        + bySequence->size;
-    if (indexByWhichDeleteElements < 0)
+        + toSequence->size;
+    if (indexToWhichDeleteElements < 0)
         return false;
 
-    return listDeleteNodes(list, indexFromWhichDeleteElements, indexByWhichDeleteElements);
+    return listDeleteNodes(list, indexFromWhichDeleteElements, indexToWhichDeleteElements);
 }
 
 bool listInsertSequenceAfterSequence(

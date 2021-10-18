@@ -39,11 +39,11 @@ bool listDeleteNodes(List list, int fromIndex, int toIndex);
 /* Inserts List into List position. Need to provide a function that copies Node data. */
 bool listInsertSequence(List list, List sequence, int position, void* (*copyNodeData)(void*));
 
-/* Deletes from List subsequence that starts from `fromSequence` and ends `bySequence`. */
-bool listDeleteFromSequenceBySequence(
+/* Deletes from List subsequence that starts from `fromSequence` and ends `toSequence`. */
+bool listDeleteFromSequenceToSequence(
     List list,
     List fromSequence,
-    List bySequence,
+    List toSequence,
     bool (*compareNodeData)(void*, void*));
 
 /* Inserts sequence `sequence` sequenceAfter first occurrence of sequence `sequenceAfter`. */
