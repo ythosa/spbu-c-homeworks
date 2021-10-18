@@ -73,19 +73,19 @@ void commandFree(Command command)
 bool runDeleteCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listDeleteFromSequenceBySequence(sequence, leftOperand, rightOperand,
-        (bool(*)(void*, void*))charPointersComparator);
+        (bool (*)(void*, void*))charPointersComparator);
 }
 
 bool runInsertCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listInsertSequenceAfterSequence(sequence, leftOperand, rightOperand,
-        (bool(*)(void*, void*))charPointersComparator, (void* (*)(void*))charPointerCopy);
+        (bool (*)(void*, void*))charPointersComparator, (void* (*)(void*))charPointerCopy);
 }
 
 bool runReplaceCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listReplaceSequence(sequence, leftOperand, rightOperand,
-        (bool(*)(void*, void*))charPointersComparator, (void* (*)(void*))charPointerCopy);
+        (bool (*)(void*, void*))charPointersComparator, (void* (*)(void*))charPointerCopy);
 }
 
 List getCommands()
@@ -94,7 +94,7 @@ List getCommands()
     Command insert = commandCreate(stringDup(INSERT_COMMAND), runInsertCommand);
     Command replace = commandCreate(stringDup(REPLACE_COMMAND), runReplaceCommand);
 
-    List commands = listCreate((void(*)(void*))commandFree);
+    List commands = listCreate((void (*)(void*))commandFree);
 
     listPushback(commands, delete);
     listPushback(commands, insert);
