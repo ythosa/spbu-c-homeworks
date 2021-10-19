@@ -26,3 +26,4 @@ target_link_libraries(test_1task_1 dataStructures)
 add_executable(test1_task2 ./test1/task_2.c)
 target_link_libraries(test1_task2 dataStructures)
 
+add_executable(task_6.1 ./6.complexity_and_sorting/task_1.c)
