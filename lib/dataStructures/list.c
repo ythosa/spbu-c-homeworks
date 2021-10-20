@@ -151,8 +151,8 @@ int listSubsequenceIndexFromIndex(List list, int fromIndex, List subsequence, bo
     if (subsequence->size > list->size && isValidListIndex(list, fromIndex))
         return -1;
 
-    node_t* listCurrentNode = list->head;
-    int i = 0;
+    node_t* listCurrentNode = listGet(list, fromIndex);
+    int i = fromIndex;
     while (listCurrentNode) {
         bool isFound = true;
         node_t* subsequenceCurrentNode = subsequence->head;
@@ -168,7 +168,7 @@ int listSubsequenceIndexFromIndex(List list, int fromIndex, List subsequence, bo
             listCurrentNodeCopy = listCurrentNodeCopy->next;
         }
 
-        if (isFound && i >= fromIndex)
+        if (isFound)
             return i;
 
         listCurrentNode = listCurrentNode->next;
