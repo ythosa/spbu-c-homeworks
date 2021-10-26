@@ -7,7 +7,7 @@
 
 typedef struct BinaryNumber BinaryNumber;
 
-BinaryNumber* binaryNumberCreate(uint size);
+BinaryNumber* binaryNumberCreate(size_t size);
 void binaryNumberFree(BinaryNumber* binaryNumber);
 void binaryNumberInvert(BinaryNumber* binaryNumber);
 BinaryNumber* binaryNumberFromInteger(int number);

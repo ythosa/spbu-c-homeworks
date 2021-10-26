@@ -1,15 +1,13 @@
-#include <math.h>
-
 #include "binary.h"
 
 #define BITS_IN_BYTE 8
 
 struct BinaryNumber {
-    uint size;
+    size_t size;
     bool* bits;
 };
 
-BinaryNumber* binaryNumberCreate(uint size)
+BinaryNumber* binaryNumberCreate(size_t size)
 {
     BinaryNumber* binaryNumber = malloc(sizeof(BinaryNumber));
 
@@ -28,7 +26,7 @@ void binaryNumberFree(BinaryNumber* binaryNumber)
 void binaryNumberInvert(BinaryNumber* binaryNumber)
 {
     for (int i = 0; i < binaryNumber->size; i++)
-        binaryNumber->bits[i] = abs(1 - binaryNumber->bits[i]);
+        binaryNumber->bits[i] = 1 - binaryNumber->bits[i];
 }
 
 BinaryNumber* binaryNumberFromInteger(int number)
@@ -56,8 +54,11 @@ BinaryNumber* binaryNumberFromInteger(int number)
 int binaryNumberToInteger(BinaryNumber* binaryNumber)
 {
     int integerNumber = 0;
-    for (int i = 0; i < binaryNumber->size; i++)
-        integerNumber += (int)pow(2, i) * binaryNumber->bits[binaryNumber->size - i - 1];
+    int currentTwoPower = 1;
+    for (int i = 0; i < binaryNumber->size; i++) {
+        integerNumber += currentTwoPower * binaryNumber->bits[binaryNumber->size - i - 1];
+        currentTwoPower *= 2;
+    }
 
     return integerNumber;
 }
@@ -72,7 +73,7 @@ BinaryNumber* binaryNumberAdd(BinaryNumber* leftOperand, BinaryNumber* rightOper
     for (int i = (int)resultBinaryNumber->size - 1; i >= 0; i--) {
         int s = leftOperand->bits[i] + rightOperand->bits[i];
         resultBinaryNumber->bits[i] = (s + buf) % 2;
-        buf = (s + buf) >= 2 ? 1 : 0;
+        buf = (s + buf) / 2;
     }
 
     return resultBinaryNumber;

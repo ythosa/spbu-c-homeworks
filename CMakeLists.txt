@@ -10,7 +10,6 @@ set(SOURCE_LIB
 add_library(library ${SOURCE_LIB})
 
 add_library(binary_lib lib/binary.c)
-target_link_libraries(binary_lib m)
 
 add_executable(task_1.1 ./1.introduction/task_1.c)
 add_executable(task_1.2 ./1.introduction/task_2.c)
