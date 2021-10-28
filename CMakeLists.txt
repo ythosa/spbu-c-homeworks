@@ -11,6 +11,10 @@ add_library(library ${SOURCE_LIB})
 
 add_library(binary_lib lib/binary.c)
 
+set(DATA_STRUCTURES_SOURCE_LIB lib/dataStructures/vector.c)
+add_library(dataStructures ${DATA_STRUCTURES_SOURCE_LIB})
+target_link_libraries(dataStructures m)
+
 add_executable(task_1.1 ./1.introduction/task_1.c)
 add_executable(task_1.2 ./1.introduction/task_2.c)
 target_link_libraries(task_1.2 library)
@@ -20,3 +24,9 @@ add_executable(task_1.5 ./1.introduction/task_5.c)
 
 add_executable(task_4.1 ./4.data_presentation/task_1.c)
 target_link_libraries(task_4.1 binary_lib)
+
+add_executable(test_1task_1 ./test1/task_1.c)
+target_link_libraries(test_1task_1 dataStructures)
+
+add_executable(test1_task2 ./test1/task_2.c)
+target_link_libraries(test1_task2 dataStructures)
