@@ -22,6 +22,8 @@ add_executable(task_1.3 ./1.introduction/task_3.c)
 add_executable(task_1.4 ./1.introduction/task_4.c)
 add_executable(task_1.5 ./1.introduction/task_5.c)
 
+add_executable(task_4.2 ./4.data_presentation/task_2.c)
+target_link_libraries(task_4.2 m)
 add_executable(task_4.1 ./4.data_presentation/task_1.c)
 target_link_libraries(task_4.1 binary_lib)
 
