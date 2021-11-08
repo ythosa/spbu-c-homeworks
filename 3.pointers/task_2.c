@@ -16,7 +16,7 @@ String charPointerToString(const char* c)
     return stringPush(stringDup(""), *c);
 }
 
-bool charPointersComparator(const char* c1, const char* c2)
+bool charPointersEqualityCheck(const char* c1, const char* c2)
 {
     return *c1 == *c2;
 }
@@ -73,19 +73,19 @@ void commandFree(Command command)
 bool runDeleteCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listDeleteFromSequenceToSequence(sequence, leftOperand, rightOperand,
-        (bool (*)(void*, void*))charPointersComparator);
+        (bool(*)(void*, void*))charPointersEqualityCheck);
 }
 
 bool runInsertCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listInsertSequenceAfterSequence(sequence, leftOperand, rightOperand,
-        (bool (*)(void*, void*))charPointersComparator, (void* (*)(void*))charPointerCopy);
+        (bool(*)(void*, void*))charPointersEqualityCheck, (void* (*)(void*))charPointerCopy);
 }
 
 bool runReplaceCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listReplaceSequence(sequence, leftOperand, rightOperand,
-        (bool (*)(void*, void*))charPointersComparator, (void* (*)(void*))charPointerCopy);
+        (bool(*)(void*, void*))charPointersEqualityCheck, (void* (*)(void*))charPointerCopy);
 }
 
 List getCommands()
@@ -94,7 +94,7 @@ List getCommands()
     Command insert = commandCreate(stringDup(INSERT_COMMAND), runInsertCommand);
     Command replace = commandCreate(stringDup(REPLACE_COMMAND), runReplaceCommand);
 
-    List commands = listCreate((void (*)(void*))commandFree);
+    List commands = listCreate((void(*)(void*))commandFree);
 
     listPushback(commands, delete);
     listPushback(commands, insert);
@@ -116,7 +116,11 @@ void handleRunCommandError(String commandName, List sequence, List leftOperand, 
     printf("\n");
 }
 
-void freeMemoryForExecuteCommand(ListIterator commandsIterator, String userCommand, List leftOperand, List rightOperand)
+void freeMemoryForExecuteCommand(
+    ListIterator commandsIterator,
+    String userCommand,
+    List leftOperand,
+    List rightOperand)
 {
     listIteratorFree(commandsIterator);
     stringFree(userCommand);
@@ -124,7 +128,7 @@ void freeMemoryForExecuteCommand(ListIterator commandsIterator, String userComma
     listFree(rightOperand);
 }
 
-void recoverDNA(List sequence, int operationsLength, FILE* inputFile, FILE* outputFile)
+bool recoverDNA(List sequence, int operationsLength, FILE* inputFile, FILE* outputFile)
 {
     char* sequenceBuffer = calloc(sizeof(char), MAX_SEQUENCE_LENGTH);
     List commands = getCommands();
@@ -146,7 +150,7 @@ void recoverDNA(List sequence, int operationsLength, FILE* inputFile, FILE* outp
                     listFree(commands);
                     free(sequenceBuffer);
 
-                    return;
+                    return false;
                 }
             }
         }
@@ -158,6 +162,8 @@ void recoverDNA(List sequence, int operationsLength, FILE* inputFile, FILE* outp
 
     listFree(commands);
     free(sequenceBuffer);
+
+    return true;
 }
 
 int main(int argc, char* argv[])
@@ -190,7 +196,8 @@ int main(int argc, char* argv[])
     int operationsLength = 0;
     fscanf(inputFile, "%d", &operationsLength);
 
-    recoverDNA(sequence, operationsLength, inputFile, outputFile);
+    if (!recoverDNA(sequence, operationsLength, inputFile, outputFile))
+        printf("There are was some errors while recovering DNA.");
 
     listFree(sequence);
     fclose(inputFile);

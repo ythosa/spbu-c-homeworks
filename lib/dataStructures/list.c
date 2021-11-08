@@ -148,7 +148,7 @@ node_t* listGet(List list, int position)
 
 int listSubsequenceIndexFromIndex(List list, int fromIndex, List subsequence, bool (*compareNodeData)(void*, void*))
 {
-    if (subsequence->size > list->size && isValidListIndex(list, fromIndex))
+    if (subsequence->size > list->size && !isValidListIndex(list, fromIndex))
         return -1;
 
     node_t* listCurrentNode = listGet(list, fromIndex);
@@ -168,7 +168,7 @@ int listSubsequenceIndexFromIndex(List list, int fromIndex, List subsequence, bo
             listCurrentNodeCopy = listCurrentNodeCopy->next;
         }
 
-        if (isFound)
+        if (isFound && !subsequenceCurrentNode)
             return i;
 
         listCurrentNode = listCurrentNode->next;
@@ -234,7 +234,7 @@ bool listInsertSequence(List list, List sequence, int position, void* (*copyNode
         sequenceCopy->tail->next = list->head;
         list->head = sequenceCopy->head;
         if (!list->tail)
-            list->tail = sequenceCopy->head;
+            list->tail = sequenceCopy->tail;
     } else if (position == list->size) {
         list->tail->next = sequenceCopy->head;
         list->tail = sequenceCopy->tail;
