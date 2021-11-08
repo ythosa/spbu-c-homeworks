@@ -1,22 +1,5 @@
+#include "../lib/binary.h"
 #include <stdio.h>
-#include <stdlib.h>
-
-int multiplyNumbers(int leftOperand, int rightOperand)
-{
-    int sign = ((leftOperand < 0) ^ (rightOperand < 0)) ? -1 : 1;
-    leftOperand = abs(leftOperand);
-    rightOperand = abs(rightOperand);
-
-    int result = 0;
-    while (rightOperand != 0) {
-        if (rightOperand & 1)
-            result += leftOperand;
-        leftOperand <<= 1;
-        rightOperand >>= 1;
-    }
-
-    return sign * result;
-}
 
 int main()
 {
@@ -28,5 +11,13 @@ int main()
     printf("Input second number: ");
     scanf("%d", &secondNumber);
 
-    printf("Multiply result: %d", multiplyNumbers(firstNumber, secondNumber));
+    BinaryNumber* firstNumberBinary = binaryNumberFromInteger(firstNumber);
+    BinaryNumber* secondNumberBinary = binaryNumberFromInteger(secondNumber);
+    BinaryNumber* multiplyResult = binaryNumberMultiply(firstNumberBinary, secondNumberBinary);
+
+    printf("Multiply result: %d", binaryNumberToInteger(multiplyResult));
+
+    binaryNumberFree(firstNumberBinary);
+    binaryNumberFree(secondNumberBinary);
+    binaryNumberFree(multiplyResult);
 }
