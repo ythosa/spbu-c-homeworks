@@ -94,7 +94,7 @@ List getCommands()
     Command insert = commandCreate(stringDup(INSERT_COMMAND), runInsertCommand);
     Command replace = commandCreate(stringDup(REPLACE_COMMAND), runReplaceCommand);
 
-    List commands = listCreate((void(*)(void*))commandFree);
+    List commands = listCreate((void (*)(void*))commandFree);
 
     listPushback(commands, delete);
     listPushback(commands, insert);
