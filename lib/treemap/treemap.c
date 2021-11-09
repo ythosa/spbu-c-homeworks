@@ -2,9 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../stack/stack.h"
 #include "treemap.h"
-
-typedef struct Node Node;
 
 struct Node {
     Value key;
@@ -29,6 +28,16 @@ Node* nodeCreate(Value key, Value value)
 void nodeFree(Node* node)
 {
     free(node);
+}
+
+Value nodeGetKey(Node* node)
+{
+    return node->key;
+}
+
+Value nodeGetValue(Node* node)
+{
+    return node->value;
 }
 
 void nodeRecursiveFree(Node* node)
@@ -322,4 +331,50 @@ Value treeMapGetLowerBound(TreeMap* treeMap, Value key)
     }
 
     return previousFound ? previousFound->key : wrapNone();
+}
+
+struct TreeMapIterator {
+    Stack* stack;
+};
+
+TreeMapIterator* treeMapIteratorCreate(TreeMap* treeMap)
+{
+    TreeMapIterator* treeMapIterator = malloc(sizeof(TreeMapIterator));
+
+    treeMapIterator->stack = stackCreate();
+
+    Node* currentNode = treeMap->head;
+    while (currentNode) {
+        stackPush(treeMapIterator->stack, wrapPointer(currentNode));
+        currentNode = currentNode->left;
+    }
+
+    return treeMapIterator;
+}
+
+void treeMapIteratorFree(TreeMapIterator* treeMapIterator)
+{
+    stackShallowFree(treeMapIterator->stack);
+    free(treeMapIterator);
+}
+
+bool treeMapIteratorHasElement(TreeMapIterator* treeMapIterator)
+{
+    return !isEmpty(treeMapIterator->stack);
+}
+
+Node* treeMapIteratorGetNext(TreeMapIterator* treeMapIterator)
+{
+    Node* result = getPointer(stackPop(treeMapIterator->stack));
+    Node* currentNode = result;
+
+    if (result->right) {
+        currentNode = currentNode->right;
+        while (currentNode) {
+            stackPush(treeMapIterator->stack, wrapPointer(currentNode));
+            currentNode = currentNode->left;
+        }
+    }
+
+    return result;
 }
