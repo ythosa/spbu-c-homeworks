@@ -148,7 +148,7 @@ node_t* listGet(List list, int position)
 
 int listSubsequenceIndexFromIndex(List list, int fromIndex, List subsequence, bool (*compareNodeData)(void*, void*))
 {
-    if (subsequence->size > list->size && !isValidListIndex(list, fromIndex))
+    if (subsequence->size > list->size || !isValidListIndex(list, fromIndex))
         return -1;
 
     node_t* listCurrentNode = listGet(list, fromIndex);
