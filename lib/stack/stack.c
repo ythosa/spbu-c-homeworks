@@ -55,7 +55,7 @@ int stackGetSize(Stack* stack)
     return stack->size;
 }
 
-bool isEmpty(Stack* stack)
+bool stackIsEmpty(Stack* stack)
 {
     return stack->size == 0;
 }

@@ -1,3 +1,6 @@
+#ifndef SPBU_C_HOMEWORKS_TREEMAP_H
+#define SPBU_C_HOMEWORKS_TREEMAP_H
+
 #include "../values/values.h"
 
 typedef struct Node Node;
@@ -22,3 +25,5 @@ TreeMapIterator* treeMapIteratorCreate(TreeMap* treeMap);
 void treeMapIteratorFree(TreeMapIterator* treeMapIterator);
 bool treeMapIteratorHasElement(TreeMapIterator* treeMapIterator);
 Node* treeMapIteratorGetNext(TreeMapIterator* treeMapIterator);
+
+#endif // SPBU_C_HOMEWORKS_TREEMAP_H

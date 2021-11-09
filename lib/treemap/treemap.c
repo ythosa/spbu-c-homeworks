@@ -360,7 +360,7 @@ void treeMapIteratorFree(TreeMapIterator* treeMapIterator)
 
 bool treeMapIteratorHasElement(TreeMapIterator* treeMapIterator)
 {
-    return !isEmpty(treeMapIterator->stack);
+    return !stackIsEmpty(treeMapIterator->stack);
 }
 
 Node* treeMapIteratorGetNext(TreeMapIterator* treeMapIterator)
