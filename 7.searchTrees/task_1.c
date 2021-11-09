@@ -1,7 +1,173 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "../lib/stack/stack.h"
 #include "../lib/treemap/treemap.h"
 
-int main()
+#define SELECT_COMMAND 1
+#define GET_COMMAND 2
+#define ADD_COMMAND 3
+#define UNDEFINED_COMMAND 4
+
+#define MAX_COMMAND_LENGTH 8
+#define MAX_COMMAND_ARGS_LENGTH 2
+
+void runSelectCommand(TreeMap* treeMap, int* args, FILE* outputFile)
 {
+    Value result = treeMapGetLowerBound(treeMap, wrapInt(args[0]));
+
+    if (!isNone(result) && (getInt(result) - 1 <= 0))
+        treeMapDelete(treeMap, result);
+
+    print(result, outputFile);
+    fprintf(outputFile, "\n");
+}
+
+void runGetCommand(TreeMap* treeMap, int* args, FILE* outputFile)
+{
+    Value result = treeMapGet(treeMap, wrapInt(args[0]));
+
+    print(result, outputFile);
+    fprintf(outputFile, "\n");
+}
+
+void runAddCommand(TreeMap* treeMap, int* args, FILE* _)
+{
+    Value key = wrapInt(args[0]);
+    Value value = wrapInt(args[1]);
+
+    Value valueBefore = treeMapGet(treeMap, key);
+    treeMapDelete(treeMap, key);
+    treeMapInsert(treeMap, key, wrapInt(value.intValue + valueBefore.intValue));
+}
+
+typedef struct Command {
+    char* name;
+    int* args;
+    void (*run)(TreeMap* treeMap, int* args, FILE* outputFile);
+} Command;
+
+Command* commandCreate(char* name, int* args)
+{
+    Command* command = malloc(sizeof(Command));
+
+    command->name = name;
+    command->args = args;
+
+    return command;
+}
+
+void commandFree(Command* command)
+{
+    free(command->name);
+    free(command->args);
+    free(command);
+}
+
+size_t readCommandName(char* buffer, FILE* inputStream)
+{
+    fscanf(inputStream, "%s", buffer);
+
+    if (!strcmp(buffer, SELECT_COMMAND))
+        return SELECT_COMMAND;
+
+    if (!strcmp(buffer, GET_COMMAND))
+        return GET_COMMAND;
+
+    if (!strcmp(buffer, ADD_COMMAND))
+        return ADD_COMMAND;
+
+    return UNDEFINED_COMMAND;
+}
+
+Command* getCommand(char* buffer, FILE* inputStream)
+{
+    size_t commandName = readCommandName(buffer, inputStream);
+    int* args = calloc(MAX_COMMAND_ARGS_LENGTH, sizeof(int));
+
+    Command* command = commandCreate(commandName, args);
+
+    switch (commandName) {
+    case SELECT_COMMAND:
+        fscanf(inputStream, "%d", &args[0]);
+        command->run = runSelectCommand;
+        break;
+    case GET_COMMAND:
+        fscanf(inputStream, "%d", &args[0]);
+        command->run = runGetCommand;
+        break;
+    case ADD_COMMAND:
+        fscanf(inputStream, "%d", &args[0]);
+        fscanf(inputStream, "%d", &args[1]);
+        command->run = runAddCommand;
+        break;
+    }
+
+    return command;
+}
+
+void processShopLogs(int operationsCount, FILE* inputFile, FILE* outputFile, FILE* outputFileLogs)
+{
+    TreeMap* products = treeMapCreate();
+    char* readCommandBuffer = calloc(MAX_COMMAND_LENGTH, sizeof(char));
+
+    for (int i = 0; i < operationsCount; i++) {
+        Command* command = getCommand(readCommandBuffer, inputFile);
+        command->run(products, command->args, outputFile);
+        commandFree(command);
+    }
+
+    TreeMapIterator* productsIterator = treeMapIteratorCreate(products);
+    while (treeMapIteratorHasElement(productsIterator)) {
+        Node* product = treeMapIteratorGetNext(productsIterator);
+        print(nodeGetKey(product), outputFileLogs);
+        fprintf(outputFileLogs, " ");
+        print(nodeGetValue(product), outputFileLogs);
+        fprintf(outputFileLogs, "\n");
+    }
+}
+
+int main(int argc, char* argv[])
+{
+
+    if (argc != 4)
+        printf("invalid count of arguments. please provide "
+               "inputFile file path, outputFile and outputFileLogs file paths through space\n");
+
+    char* inputFilePath = argv[1];
+    char* outputFilePath = argv[2];
+    char* outputFileLogsPath = argv[3];
+
+    FILE* inputFile = fopen(inputFilePath, "r");
+    if (!inputFile) {
+        printf("invalid input file path: %s\n", inputFilePath);
+
+        return 0;
+    }
+
+    FILE* outputFile = fopen(outputFilePath, "w");
+    if (!outputFile) {
+        printf("invalid output file path: %s\n", outputFilePath);
+
+        return 0;
+    }
+
+    FILE* outputFileLogs = fopen(outputFileLogsPath, "w");
+    if (!outputFileLogs) {
+        printf("invalid output file logs path: %s\n", outputFileLogsPath);
+
+        return 0;
+    }
+
+    int operationsCount = 0;
+    scanf("%d", &operationsCount);
+
+    processShopLogs(operationsCount, inputFile, outputFile, outputFileLogs);
+
+    fclose(inputFile);
+    fclose(outputFile);
+    fclose(outputFileLogs);
+
     return 0;
 }
