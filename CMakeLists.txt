@@ -10,9 +10,12 @@ set(SOURCE_LIB
 add_library(library ${SOURCE_LIB})
 
 add_library(values lib/values/values.c)
+
+add_library(stack lib/stack/stack.c)
+target_link_libraries(stack values)
+
 add_library(treemap lib/treemap/treemap.c)
-target_link_libraries(treemap values)
-target_link_libraries(treemap library)
+target_link_libraries(treemap values stack library)
 
 add_executable(task_1.1 ./1.introduction/task_1.c)
 add_executable(task_1.2 ./1.introduction/task_2.c)
