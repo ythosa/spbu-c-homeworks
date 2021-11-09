@@ -23,8 +23,6 @@ void runSelectCommand(TreeMap* treeMap, int* args, FILE* outputFile)
     Value resultKey = treeMapGetLowerBound(treeMap, key);
 
     if (isNone(resultKey)) {
-//        fprintf(outputFile, "select %d ", key.intValue);
-
         fprintf(outputFile, "SORRY\n");
 
         return;
@@ -34,11 +32,9 @@ void runSelectCommand(TreeMap* treeMap, int* args, FILE* outputFile)
     Value newValue = wrapInt(getInt(valueBefore) - 1);
     treeMapDelete(treeMap, resultKey);
     if (getInt(newValue) > 0)
-        treeMapInsert(treeMap, resultKey, newValue);
+        treeMapPut(treeMap, resultKey, newValue);
 
     print(resultKey, outputFile);
-
-//    fprintf(outputFile, " (select %d: %d -> %d)", key.intValue, valueBefore.intValue, newValue.intValue);
 
     fprintf(outputFile, "\n");
 }
@@ -48,9 +44,6 @@ void runGetCommand(TreeMap* treeMap, int* args, FILE* outputFile)
     Value result = treeMapGet(treeMap, wrapInt(args[0]));
 
     !isNone(result) ? print(result, outputFile) : fprintf(outputFile, "0");
-
-//    fprintf(outputFile, " (get %d)", args[0]);
-
     fprintf(outputFile, "\n");
 }
 
@@ -60,14 +53,7 @@ void runAddCommand(TreeMap* treeMap, int* args, FILE* outputFile)
     Value value = wrapInt(args[1]);
 
     Value valueBefore = treeMapGet(treeMap, key);
-    if (isNone(valueBefore)) {
-        treeMapInsert(treeMap, key, value);
-    } else {
-        treeMapDelete(treeMap, key);
-        treeMapInsert(treeMap, key, wrapInt(value.intValue + valueBefore.intValue));
-    }
-
-//    fprintf(outputFile, "add %d: %d -> %d\n", key.intValue, valueBefore.intValue, value.intValue + valueBefore.intValue);
+    treeMapPut(treeMap, key, wrapInt(value.intValue + valueBefore.intValue));
 }
 
 typedef struct Command {
@@ -137,11 +123,9 @@ void processShopLogs(int operationsCount, FILE* inputFile, FILE* outputFile, FIL
     TreeMap* products = treeMapCreate();
     char* readCommandBuffer = calloc(MAX_COMMAND_LENGTH, sizeof(char));
 
-    for (int i = 0; i < 53; i++) {
+    for (int i = 0; i < operationsCount; i++) {
         Command* command = getCommand(readCommandBuffer, inputFile);
         command->run(products, command->args, outputFile);
-//        treeMapPrint(products, outputFile);
-//        fprintf(outputFile," products\n");
         commandFree(command);
     }
 

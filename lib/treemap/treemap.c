@@ -142,20 +142,21 @@ void nodeInOrderPrint(Node* node, FILE* destination)
     nodeInOrderPrint(node->right, destination);
 }
 
-Node* nodeInsert(Node* node, Node* newNode)
+Node* nodePut(Node* node, Value key, Value value)
 {
     if (!node)
-        return newNode;
+        return nodeCreate(key, value);
 
-    switch (compare(newNode->key, node->key)) {
+    switch (compare(key, node->key)) {
     case -1:
-        node->left = nodeInsert(node->left, newNode);
+        node->left = nodePut(node->left, key, value);
         break;
     case 1:
-        node->right = nodeInsert(node->right, newNode);
+        node->right = nodePut(node->right, key, value);
         break;
     default:
-        return node; // do we allow the same elements to be stored?
+        node->value = value;
+        return node;
     }
 
     node->height = 1 + max(nodeHeight(node->left), nodeHeight(node->right));
@@ -209,6 +210,7 @@ Node* nodeDelete(Node* node, Value key)
         } else {
             Node* temp = nodeFindMin(node->right);
             node->key = temp->key;
+            node->value = temp->value;
             node->right = nodeDelete(node->right, temp->key);
         }
     }
@@ -240,10 +242,9 @@ void treeMapFree(TreeMap* treeMap)
     free(treeMap);
 }
 
-void treeMapInsert(TreeMap* treeMap, Value key, Value value)
+void treeMapPut(TreeMap* treeMap, Value key, Value value)
 {
-    Node* newNode = nodeCreate(key, value);
-    treeMap->head = nodeInsert(treeMap->head, newNode);
+    treeMap->head = nodePut(treeMap->head, key, value);
 }
 
 void treeMapPrint(TreeMap* treeMap, FILE* destination)
