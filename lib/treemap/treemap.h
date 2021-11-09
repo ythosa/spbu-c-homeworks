@@ -8,7 +8,7 @@ Value nodeGetKey(Node*);
 Value nodeGetValue(Node*);
 
 typedef struct TreeMap TreeMap;
-TreeMap* treeMapCreate();
+TreeMap* treeMapCreate(Comparator);
 void treeMapFree(TreeMap* treeMap);
 void treeMapPrint(TreeMap* treeMap, FILE* destination);
 void treeMapPut(TreeMap* treeMap, Value key, Value value);

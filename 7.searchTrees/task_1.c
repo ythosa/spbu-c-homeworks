@@ -118,9 +118,8 @@ Command* getCommand(char* buffer, FILE* inputStream)
     return command;
 }
 
-void processShopLogs(int operationsCount, FILE* inputFile, FILE* outputFile, FILE* outputFileLogs)
+void executeShopOperations(TreeMap* products, int operationsCount, FILE* inputFile, FILE* outputFile)
 {
-    TreeMap* products = treeMapCreate();
     char* readCommandBuffer = calloc(MAX_COMMAND_LENGTH, sizeof(char));
 
     for (int i = 0; i < operationsCount; i++) {
@@ -129,6 +128,11 @@ void processShopLogs(int operationsCount, FILE* inputFile, FILE* outputFile, FIL
         commandFree(command);
     }
 
+    free(readCommandBuffer);
+}
+
+void printShopProducts(TreeMap* products, FILE* outputFileLogs)
+{
     TreeMapIterator* productsIterator = treeMapIteratorCreate(products);
     while (treeMapIteratorHasElement(productsIterator)) {
         Node* product = treeMapIteratorGetNext(productsIterator);
@@ -138,9 +142,17 @@ void processShopLogs(int operationsCount, FILE* inputFile, FILE* outputFile, FIL
         fprintf(outputFileLogs, "\n");
     }
 
-    treeMapFree(products);
-    free(readCommandBuffer);
     treeMapIteratorFree(productsIterator);
+}
+
+void processShopLogs(int operationsCount, FILE* inputFile, FILE* outputFile, FILE* outputFileLogs)
+{
+    TreeMap* products = treeMapCreate(compare);
+
+    executeShopOperations(products, operationsCount, inputFile, outputFile);
+    printShopProducts(products, outputFileLogs);
+
+    treeMapFree(products);
 }
 
 int main(int argc, char* argv[])
