@@ -73,19 +73,19 @@ void commandFree(Command command)
 bool runDeleteCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listDeleteFromSequenceToSequence(sequence, leftOperand, rightOperand,
-        (bool(*)(void*, void*))charPointersEqualityCheck);
+        (bool (*)(void*, void*))charPointersEqualityCheck);
 }
 
 bool runInsertCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listInsertSequenceAfterSequence(sequence, leftOperand, rightOperand,
-        (bool(*)(void*, void*))charPointersEqualityCheck, (void* (*)(void*))charPointerCopy);
+        (bool (*)(void*, void*))charPointersEqualityCheck, (void* (*)(void*))charPointerCopy);
 }
 
 bool runReplaceCommand(List sequence, List leftOperand, List rightOperand)
 {
     return listReplaceSequence(sequence, leftOperand, rightOperand,
-        (bool(*)(void*, void*))charPointersEqualityCheck, (void* (*)(void*))charPointerCopy);
+        (bool (*)(void*, void*))charPointersEqualityCheck, (void* (*)(void*))charPointerCopy);
 }
 
 List getCommands()
