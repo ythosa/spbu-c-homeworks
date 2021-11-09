@@ -2,6 +2,7 @@
 #define SPBU_C_HOMEWORKS_VALUES_H
 
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef enum ValueType {
     INT_TYPE,
@@ -24,6 +25,7 @@ typedef struct Value {
 #pragma pack(pop)
 
 typedef int (*Comparator)(Value, Value);
+typedef void (*Printer)(Value value, FILE* destination);
 
 Value wrapInt(int value);
 Value wrapDouble(double value);
@@ -39,5 +41,6 @@ bool isNone(Value value);
 
 bool equals(Value first, Value second);
 int compare(Value first, Value second);
+void print(Value value, FILE* destination);
 
 #endif // SPBU_C_HOMEWORKS_VALUES_H

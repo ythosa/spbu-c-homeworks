@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 void assertCommonType(Value first, Value second)
@@ -108,4 +109,25 @@ int compare(Value first, Value second)
     }
     assert(false);
     return 0;
+}
+
+void print(Value value, FILE* destination)
+{
+    switch (value.type) {
+    case INT_TYPE:
+        fprintf(destination, "%d", value.intValue);
+        break;
+    case DOUBLE_TYPE:
+        fprintf(destination, "%f", value.doubleValue);
+        break;
+    case STRING_TYPE:
+        fprintf(destination, "%s", value.stringValue);
+        break;
+    case POINTER_TYPE:
+        fprintf(destination, "%p", value.pointerValue);
+        break;
+    case NONE_TYPE:
+        fprintf(destination, "none");
+        break;
+    }
 }
