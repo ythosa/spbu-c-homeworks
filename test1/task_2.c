@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     scanf("%d", &b);
 
     if (a > b) {
-        swap(a, b);
+        swap(&a, &b);
     }
 
     Vector* numsLowerThenA = vectorCreate();
