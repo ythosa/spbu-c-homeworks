@@ -1,4 +1,5 @@
-#include "../../library/commonUtils/numericOperations.h"
+#include "../../lib/commonUtils/numericOperations.h"
+#include "../../lib/list/list.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -378,4 +379,22 @@ Node* treeMapIteratorGetNext(TreeMapIterator* treeMapIterator)
     }
 
     return result;
+}
+
+List treeMapToSortedList(TreeMap* treeMap)
+{
+    List list = listCreate(free);
+
+    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(treeMap);
+
+    while (treeMapIteratorHasElement(treeMapIterator)) {
+
+    }
+
+    treeMapIteratorFree(treeMapIterator);
+}
+
+TreeMap*
+treeMapJoin(TreeMap* map, TreeMap* another)
+{
 }

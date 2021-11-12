@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../lib/dataStructures/vector.h"
+#include "../lib/vector/vector.h"
 
 void readVector(Vector* vector, FILE* inputStream)
 {

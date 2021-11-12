@@ -23,6 +23,50 @@ void binaryNumberFree(BinaryNumber* binaryNumber)
     free(binaryNumber);
 }
 
+void binaryNumberLeftShift(BinaryNumber* binaryNumber, size_t bitsCount)
+{
+    for (size_t i = 0; i < binaryNumber->size; i++) {
+        size_t bitPosition = i + bitsCount;
+        if (bitPosition < binaryNumber->size)
+            binaryNumber->bits[i] = binaryNumber->bits[bitPosition];
+        else
+            binaryNumber->bits[i] = 0;
+    }
+}
+
+void binaryNumberRightShift(BinaryNumber* binaryNumber, size_t bitsCount)
+{
+    for (int i = (int)binaryNumber->size - 1; i >= 0; i--) {
+        int bitPosition = i - (int)bitsCount;
+        if (bitPosition >= 0)
+            binaryNumber->bits[i] = binaryNumber->bits[bitPosition];
+        else
+            binaryNumber->bits[i] = 0;
+    }
+}
+
+BinaryNumber* binaryNumberMultiply(BinaryNumber* leftOperand, BinaryNumber* rightOperand)
+{
+    if (leftOperand->size != rightOperand->size) {
+        return NULL;
+    }
+
+    BinaryNumber* result = binaryNumberCreate(leftOperand->size);
+
+    while (binaryNumberToInteger(rightOperand) != 0) {
+        if (rightOperand->bits[rightOperand->size - 1] == 1) {
+            BinaryNumber* newResult = binaryNumberAdd(result, leftOperand);
+            binaryNumberFree(result);
+            result = newResult;
+        }
+
+        binaryNumberLeftShift(leftOperand, 1);
+        binaryNumberRightShift(rightOperand, 1);
+    }
+
+    return result;
+}
+
 void binaryNumberInvert(BinaryNumber* binaryNumber)
 {
     for (int i = 0; i < binaryNumber->size; i++)

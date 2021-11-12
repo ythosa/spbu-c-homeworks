@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "../lib/binary.h"
+#include "../lib/binary/binary.h"
 
 int main()
 {

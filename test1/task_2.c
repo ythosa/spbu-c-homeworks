@@ -1,4 +1,4 @@
-#include "../lib/dataStructures/vector.h"
+#include "../lib/vector/vector.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     scanf("%d", &b);
 
     if (a > b) {
-        swap(a, b);
+        swap(&a, &b);
     }
 
     Vector* numsLowerThenA = vectorCreate();
