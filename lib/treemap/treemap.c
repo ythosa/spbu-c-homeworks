@@ -143,17 +143,17 @@ void nodeInOrderPrint(Node* node, FILE* destination)
     nodeInOrderPrint(node->right, destination);
 }
 
-Node* nodePut(Node* node, Value key, Value value)
+Node* nodePut(Node* node, Value key, Value value, Comparator comparator)
 {
     if (!node)
         return nodeCreate(key, value);
 
-    switch (compare(key, node->key)) {
+    switch (comparator(key, node->key)) {
     case -1:
-        node->left = nodePut(node->left, key, value);
+        node->left = nodePut(node->left, key, value, comparator);
         break;
     case 1:
-        node->right = nodePut(node->right, key, value);
+        node->right = nodePut(node->right, key, value, comparator);
         break;
     default:
         node->value = value;
@@ -185,17 +185,17 @@ Node* nodeFindMax(Node* node)
     return currentNode;
 }
 
-Node* nodeDelete(Node* node, Value key)
+Node* nodeDelete(Node* node, Value key, Comparator comparator)
 {
     if (!node)
         return node;
 
-    switch (compare(key, node->key)) {
+    switch (comparator(key, node->key)) {
     case -1:
-        node->left = nodeDelete(node->left, key);
+        node->left = nodeDelete(node->left, key, comparator);
         break;
     case 1:
-        node->right = nodeDelete(node->right, key);
+        node->right = nodeDelete(node->right, key, comparator);
         break;
     default:
         if (!node->left || !node->right) {
@@ -212,7 +212,7 @@ Node* nodeDelete(Node* node, Value key)
             Node* temp = nodeFindMin(node->right);
             node->key = temp->key;
             node->value = temp->value;
-            node->right = nodeDelete(node->right, temp->key);
+            node->right = nodeDelete(node->right, temp->key, comparator);
         }
     }
 
@@ -226,13 +226,15 @@ Node* nodeDelete(Node* node, Value key)
 
 struct TreeMap {
     Node* head;
+    Comparator comparator;
 };
 
-TreeMap* treeMapCreate()
+TreeMap* treeMapCreate(Comparator comparator)
 {
     TreeMap* treeMap = malloc(sizeof(TreeMap));
 
     treeMap->head = NULL;
+    treeMap->comparator = comparator;
 
     return treeMap;
 }
@@ -245,7 +247,7 @@ void treeMapFree(TreeMap* treeMap)
 
 void treeMapPut(TreeMap* treeMap, Value key, Value value)
 {
-    treeMap->head = nodePut(treeMap->head, key, value);
+    treeMap->head = nodePut(treeMap->head, key, value, treeMap->comparator);
 }
 
 void treeMapPrint(TreeMap* treeMap, FILE* destination)
@@ -255,7 +257,7 @@ void treeMapPrint(TreeMap* treeMap, FILE* destination)
 
 void treeMapDelete(TreeMap* treeMap, Value key)
 {
-    treeMap->head = nodeDelete(treeMap->head, key);
+    treeMap->head = nodeDelete(treeMap->head, key, treeMap->comparator);
 }
 
 Value treeMapGet(TreeMap* treeMap, Value key)
@@ -263,9 +265,9 @@ Value treeMapGet(TreeMap* treeMap, Value key)
     Node* currentNode = treeMap->head;
 
     while (currentNode) {
-        if (compare(currentNode->key, key) == 0)
+        if (treeMap->comparator(currentNode->key, key) == 0)
             break;
-        currentNode = compare(currentNode->key, key) == -1 ? currentNode->right : currentNode->left;
+        currentNode = treeMap->comparator(currentNode->key, key) == -1 ? currentNode->right : currentNode->left;
     }
 
     if (currentNode)
@@ -301,7 +303,7 @@ Value treeMapGetUpperBound(TreeMap* treeMap, Value key)
     Node* previousFound = NULL;
 
     while (currentNode) {
-        switch (compare(currentNode->key, key)) {
+        switch (treeMap->comparator(currentNode->key, key)) {
         case 1:
             previousFound = currentNode;
             currentNode = currentNode->left;
@@ -321,7 +323,7 @@ Value treeMapGetLowerBound(TreeMap* treeMap, Value key)
     Node* previousFound = NULL;
 
     while (currentNode) {
-        switch (compare(currentNode->key, key)) {
+        switch (treeMap->comparator(currentNode->key, key)) {
         case -1:
             currentNode = currentNode->right;
             break;
