@@ -383,20 +383,35 @@ Node* treeMapIteratorGetNext(TreeMapIterator* treeMapIterator)
     return result;
 }
 
-List treeMapToSortedList(TreeMap* treeMap)
+void treeMapJoin(TreeMap* map, TreeMap* another)
 {
-    List list = listCreate(free);
-
-    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(treeMap);
-
+    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(another);
     while (treeMapIteratorHasElement(treeMapIterator)) {
-
+        Node* currentNode = treeMapIteratorGetNext(treeMapIterator);
+        treeMapPut(map, currentNode->key, currentNode->value);
     }
-
-    treeMapIteratorFree(treeMapIterator);
 }
 
-TreeMap*
-treeMapJoin(TreeMap* map, TreeMap* another)
+TreeMap* treeMapSplit(TreeMap* map, Value splitKey)
 {
+    TreeMap* mapGeq = treeMapCreate(map->comparator);
+    TreeMap* mapLt = treeMapCreate(map->comparator);
+
+    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(map);
+    while (treeMapIteratorHasElement(treeMapIterator)) {
+        Node* currentNode = treeMapIteratorGetNext(treeMapIterator);
+        switch (map->comparator(currentNode->key, splitKey)) {
+        case -1:
+            treeMapPut(mapLt, currentNode->key, currentNode->value);
+            break;
+        default:
+            treeMapPut(mapGeq, currentNode->key, currentNode->value);
+            break;
+        }
+    }
+
+    treeMapFree(map);
+    map = mapLt;
+
+    return mapGeq;
 }
