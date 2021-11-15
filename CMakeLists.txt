@@ -10,6 +10,7 @@ add_library(commonUtils
 
 add_library(string lib/string/string.c)
 add_library(list lib/list/list.c)
+target_link_libraries(list string)
 add_library(dict lib/dict/dict.c)
 add_library(vector lib/vector/vector.c)
 add_library(values lib/values/values.c)
@@ -18,7 +19,7 @@ add_library(stack lib/stack/stack.c)
 target_link_libraries(stack values)
 
 add_library(treemap lib/treemap/treemap.c)
-target_link_libraries(treemap values stack library list)
+target_link_libraries(treemap values stack commonUtils list)
 add_library(binary_lib lib/binary/binary.c)
 
 add_library(io lib/io/csv.c)
@@ -50,3 +51,5 @@ target_link_libraries(test1_task2 dataStructures)
 
 add_executable(task_7.1 ./7.searchTrees/task_1.c)
 target_link_libraries(task_7.1 treemap)
+add_executable(task_7.2 ./7.searchTrees/task_2.c)
+target_link_libraries(task_7.2 treemap)

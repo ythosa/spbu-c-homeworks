@@ -1,6 +1,7 @@
 #ifndef SPBU_C_HOMEWORKS_TREEMAP_H
 #define SPBU_C_HOMEWORKS_TREEMAP_H
 
+#include "../list/list.h"
 #include "../values/values.h"
 
 typedef struct Node Node;
@@ -19,6 +20,10 @@ Value treeMapGetMaximum(TreeMap* treeMap);
 Value treeMapGetMinimum(TreeMap* treeMap);
 Value treeMapGetUpperBound(TreeMap* treeMap, Value key);
 Value treeMapGetLowerBound(TreeMap* treeMap, Value key);
+void treeMapJoin(TreeMap* map, TreeMap* another);
+TreeMap* treeMapSplit(TreeMap* map, Value splitKey);
+void treeMapRemoveKeys(TreeMap* treeMap, Value left, Value right);
+List treeMapGetAll(TreeMap* treeMap, Value left, Value right);
 
 typedef struct TreeMapIterator TreeMapIterator;
 TreeMapIterator* treeMapIteratorCreate(TreeMap* treeMap);

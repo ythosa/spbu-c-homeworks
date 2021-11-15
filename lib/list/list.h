@@ -1,4 +1,6 @@
 #include "../string/string.h"
+#include "stdbool.h"
+
 #ifndef SPBU_C_HOMEWORKS_LIST_H
 #define SPBU_C_HOMEWORKS_LIST_H
 

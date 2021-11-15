@@ -1,9 +1,9 @@
 #include "../../lib/commonUtils/numericOperations.h"
 #include "../../lib/list/list.h"
+#include "../stack/stack.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../stack/stack.h"
 #include "treemap.h"
 
 struct Node {
@@ -337,6 +337,75 @@ Value treeMapGetLowerBound(TreeMap* treeMap, Value key)
     return previousFound ? previousFound->key : wrapNone();
 }
 
+void treeMapJoin(TreeMap* map, TreeMap* another)
+{
+    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(another);
+    while (treeMapIteratorHasElement(treeMapIterator)) {
+        Node* currentNode = treeMapIteratorGetNext(treeMapIterator);
+        treeMapPut(map, currentNode->key, currentNode->value);
+    }
+    treeMapIteratorFree(treeMapIterator);
+}
+
+TreeMap* treeMapSplit(TreeMap* map, Value splitKey)
+{
+    TreeMap* mapGeq = treeMapCreate(map->comparator);
+    TreeMap* mapLt = treeMapCreate(map->comparator);
+
+    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(map);
+    while (treeMapIteratorHasElement(treeMapIterator)) {
+        Node* currentNode = treeMapIteratorGetNext(treeMapIterator);
+        switch (map->comparator(currentNode->key, splitKey)) {
+        case -1:
+            treeMapPut(mapLt, currentNode->key, currentNode->value);
+            break;
+        default:
+            treeMapPut(mapGeq, currentNode->key, currentNode->value);
+            break;
+        }
+    }
+    treeMapIteratorFree(treeMapIterator);
+
+    nodeRecursiveFree(map->head);
+    map->head = mapLt->head;
+    free(mapLt);
+
+    return mapGeq;
+}
+
+List treeMapGetAll(TreeMap* treeMap, Value left, Value right)
+{
+    List values = listCreate(free);
+
+    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(treeMap);
+    while (treeMapIteratorHasElement(treeMapIterator)) {
+        Node* currentNode = treeMapIteratorGetNext(treeMapIterator);
+        if (treeMap->comparator(currentNode->key, left) > -1 && treeMap->comparator(currentNode->key, right) < 1) {
+            Value* currentNodeValue = malloc(sizeof(Value));
+            *currentNodeValue = currentNode->key;
+
+            listPushback(values, currentNodeValue);
+        }
+    }
+    treeMapIteratorFree(treeMapIterator);
+
+    return values;
+}
+
+void treeMapRemoveKeys(TreeMap* treeMap, Value left, Value right)
+{
+    List keys = treeMapGetAll(treeMap, left, right);
+
+    ListIterator keysIterator = listIteratorCreate(keys);
+    while (listIteratorHasMore(keysIterator)) {
+        Value* key = listIteratorGetNext(keysIterator);
+        treeMapDelete(treeMap, *key);
+    }
+    
+    listIteratorFree(keysIterator);
+    listFree(keys);
+}
+
 struct TreeMapIterator {
     Stack* stack;
 };
@@ -381,37 +450,4 @@ Node* treeMapIteratorGetNext(TreeMapIterator* treeMapIterator)
     }
 
     return result;
-}
-
-void treeMapJoin(TreeMap* map, TreeMap* another)
-{
-    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(another);
-    while (treeMapIteratorHasElement(treeMapIterator)) {
-        Node* currentNode = treeMapIteratorGetNext(treeMapIterator);
-        treeMapPut(map, currentNode->key, currentNode->value);
-    }
-}
-
-TreeMap* treeMapSplit(TreeMap* map, Value splitKey)
-{
-    TreeMap* mapGeq = treeMapCreate(map->comparator);
-    TreeMap* mapLt = treeMapCreate(map->comparator);
-
-    TreeMapIterator* treeMapIterator = treeMapIteratorCreate(map);
-    while (treeMapIteratorHasElement(treeMapIterator)) {
-        Node* currentNode = treeMapIteratorGetNext(treeMapIterator);
-        switch (map->comparator(currentNode->key, splitKey)) {
-        case -1:
-            treeMapPut(mapLt, currentNode->key, currentNode->value);
-            break;
-        default:
-            treeMapPut(mapGeq, currentNode->key, currentNode->value);
-            break;
-        }
-    }
-
-    treeMapFree(map);
-    map = mapLt;
-
-    return mapGeq;
 }

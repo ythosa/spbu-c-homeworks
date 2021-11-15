@@ -1,5 +1,4 @@
 #include "../string/string.h"
-#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +10,7 @@ typedef struct Node {
     void* data;
 } node_t;
 
-node_t* nodeCreate(node_t* next, void* data)
+static node_t* nodeCreate(node_t* next, void* data)
 {
     node_t* node = malloc(sizeof(node_t));
     node->next = next;
@@ -20,7 +19,7 @@ node_t* nodeCreate(node_t* next, void* data)
     return node;
 }
 
-void nodeFree(node_t* node, void (*freeNodeData)(void*))
+static void nodeFree(node_t* node, void (*freeNodeData)(void*))
 {
     freeNodeData(node->data);
     free(node);
