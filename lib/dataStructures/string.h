@@ -23,6 +23,9 @@ void stringPrint(String s, FILE* dst);
  * Analog for `strdup`. */
 String stringDup(const char* from);
 
+/* Returns string copy. */
+String stringCopy(String from);
+
 /* Converts String to char*. */
 uint8_t* stringC(String s);
 

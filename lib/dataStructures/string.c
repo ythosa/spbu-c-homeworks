@@ -39,6 +39,14 @@ String stringDup(const char* from)
     return s;
 }
 
+String stringCopy(String from)
+{
+    String s = stringCreate(from->length);
+    memcpy(s->data, from->data, s->length + 1);
+
+    return s;
+}
+
 uint8_t* stringC(String s)
 {
     return s->data;
