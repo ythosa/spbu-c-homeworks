@@ -47,3 +47,6 @@ add_executable(test_1task_1 ./test1/task_1.c)
 target_link_libraries(test_1task_1 dataStructures)
 add_executable(test1_task2 ./test1/task_2.c)
 target_link_libraries(test1_task2 dataStructures)
+
+add_executable(test2_task2 ./test2/task_2.c)
+target_link_libraries(test2_task2 commonUtils)
