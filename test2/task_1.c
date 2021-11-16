@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int calculateFib(int n)
+long long calculateFib(int n)
 {
     if (n == 0)
         return 0;
@@ -8,9 +8,9 @@ int calculateFib(int n)
     if (n == 1)
         return 1;
 
-    int fibPrevPrev = 0;
-    int fibPrev = 1;
-    int result = 0;
+    long long fibPrevPrev = 0;
+    long long fibPrev = 1;
+    long long result = 0;
 
     for (int i = 2; i <= n; i++) {
         result = fibPrevPrev + fibPrev;
@@ -27,7 +27,7 @@ int main()
 
     int n = 0;
     scanf("%d", &n);
-    printf("Result: %d", calculateFib(n - 1));
+    printf("Result: %lld", calculateFib(n - 1));
 
     return 0;
 }
