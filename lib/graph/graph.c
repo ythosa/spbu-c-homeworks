@@ -11,7 +11,7 @@ Graph* graphCreate()
 {
     Graph* g = malloc(sizeof(Graph));
 
-    g->data = dictCreate((void(*)(void*))dictFree);
+    g->data = dictCreate(dictFree);
 
     return g;
 }
@@ -101,7 +101,7 @@ int graphFindTheShortestPath(Graph* g, String start, String end, List resultPath
 {
     Dict costs = graphGetCosts(g, start);
     Dict used = dictCreate(free);
-    Dict parents = dictCreate((void(*)(void*))stringFree);
+    Dict parents = dictCreate(stringFree);
 
     Heap* heap = heapCreate(vertexCostsComparator);
     heapInsert(heap, wrapPointer(vertexCostCreate(stringCopy(start), *(int*)dictGet(costs, start))));

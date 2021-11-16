@@ -18,7 +18,7 @@ void readGraphEdges(Graph* g, int edgesCount, FILE* inputStream)
 
 void calculateTheShortestPath(Graph* graph, String start, String end)
 {
-    List path = listCreate((void(*)(void*))stringFree);
+    List path = listCreate(stringFree);
     int pathLength = graphFindTheShortestPath(graph, start, end, path);
     printf("%d %d\n", listSize(path) - 1, pathLength);
 
