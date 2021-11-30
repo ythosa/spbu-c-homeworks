@@ -8,6 +8,7 @@ add_library(commonUtils
         lib/commonUtils/arrayOperations.c
         )
 
+
 set(DATA_STRUCTURES_SOURCE_LIB
         lib/dataStructures/string.c
         lib/dataStructures/list.c
@@ -16,12 +17,18 @@ set(DATA_STRUCTURES_SOURCE_LIB
         )
 add_library(dataStructures ${DATA_STRUCTURES_SOURCE_LIB})
 target_link_libraries(dataStructures m)
-        
+
 add_library(binary_lib lib/binary.c)
 
-add_library(io
-        lib/io/csv.c
-        )
+add_library(io lib/io/csv.c)
+
+add_library(values lib/values/values.c)
+add_library(arrayList lib/arrayList/arrayList.c)
+target_link_libraries(arrayList values)
+add_library(heap lib/heap/heap.c)
+target_link_libraries(heap values arrayList)
+add_library(graph lib/graph/graph.c)
+target_link_libraries(graph heap dataStructures)
 
 add_executable(task_1.1 ./1.introduction/task_1.c)
 add_executable(task_1.2 ./1.introduction/task_2.c)
@@ -47,3 +54,6 @@ add_executable(test_1task_1 ./test1/task_1.c)
 target_link_libraries(test_1task_1 dataStructures)
 add_executable(test1_task2 ./test1/task_2.c)
 target_link_libraries(test1_task2 dataStructures)
+
+add_executable(task_9.1 ./9.graphs/task_1.c)
+target_link_libraries(task_9.1 graph)

@@ -1,6 +1,8 @@
-#include "string.h"
 #ifndef SPBU_C_HOMEWORKS_LIST_H
 #define SPBU_C_HOMEWORKS_LIST_H
+
+#include "string.h"
+#include <stdbool.h>
 
 /* A List is a reference type.
  * You should use listFree to free up the List memory. */
@@ -14,6 +16,9 @@ void listFree(List list);
 
 /* Adds an Element to the end of the List. */
 void listPushback(List list, void* data);
+
+/* Adds an Element to the beginning of the List. */
+void listUnshift(List list, void* data);
 
 /* Returns List size. */
 int listSize(List list);
@@ -72,10 +77,10 @@ ListIterator listIteratorCreate(List list);
 /* Free up list iterator memory. */
 void listIteratorFree(ListIterator listIterator);
 
-/* Returns next element of list. */
+/* Returns arrayListIteratorNext element of list. */
 void* listIteratorGetNext(ListIterator listIterator);
 
-/* Returns true if list has next element, otherwise - false. */
+/* Returns true if list has arrayListIteratorNext element, otherwise - false. */
 bool listIteratorHasMore(ListIterator listIterator);
 
 #endif // SPBU_C_HOMEWORKS_LIST_H
