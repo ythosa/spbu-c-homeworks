@@ -5,7 +5,7 @@
 
 typedef enum DFAErrorCode {
     TransitionNotFound,
-    NotFiniteState
+    NotAcceptState
 } DFAErrorCode;
 
 struct DFAError {
@@ -14,7 +14,7 @@ struct DFAError {
     int currentState;
 };
 
-DFAError* dfaErrorCreate(DFAErrorCode errorCode, char currentToken, int currentState)
+static DFAError* dfaErrorCreate(DFAErrorCode errorCode, char currentToken, int currentState)
 {
     DFAError* dfaError = malloc(sizeof(DFAError));
 
@@ -37,8 +37,8 @@ void dfaErrorPrint(FILE* outputStream, DFAError* dfaError)
         fprintf(outputStream, "there is no transition for token \"%c\" (state %d)\n",
             dfaError->currentToken, dfaError->currentState);
         break;
-    case NotFiniteState:
-        fprintf(outputStream, "there is not finite state: %d\n", dfaError->currentState);
+    case NotAcceptState:
+        fprintf(outputStream, "there is not accept state: %d\n", dfaError->currentState);
         break;
     default:
         fprintf(outputStream, "there is error in token \"%c\" (state %d)\n",
@@ -57,24 +57,24 @@ Transition transitionCreate(int fromState, int toState, TransitionFunction trans
 struct DFA {
     int transitionsCount;
     Transition* transitions;
-    int finiteStatesCount;
-    int* finiteStates;
+    int acceptStatesCount;
+    int* acceptStates;
     int startState;
 };
 
 DFA* dfaCreate(
     int transitionsCount,
     Transition* transitions,
-    int finiteStatesCount,
-    int* finiteStates,
+    int acceptStatesCount,
+    int* acceptStates,
     int startState)
 {
     DFA* dfa = malloc(sizeof(DFA));
 
     dfa->transitionsCount = transitionsCount;
     dfa->transitions = transitions;
-    dfa->finiteStatesCount = finiteStatesCount;
-    dfa->finiteStates = finiteStates;
+    dfa->acceptStatesCount = acceptStatesCount;
+    dfa->acceptStates = acceptStates;
     dfa->startState = startState;
 
     return dfa;
@@ -83,21 +83,21 @@ DFA* dfaCreate(
 void dfaFree(DFA* dfa)
 {
     free(dfa->transitions);
-    free(dfa->finiteStates);
+    free(dfa->acceptStates);
     free(dfa);
 }
 
-static DFAError* isFiniteState(DFA* dfa, int state)
+static DFAError* isAcceptState(DFA* dfa, int state)
 {
-    bool isFiniteState = false;
+    bool isAcceptState = false;
 
-    for (int i = 0; i < dfa->finiteStatesCount; i++)
-        if (state == dfa->finiteStates[i]) {
-            isFiniteState = true;
+    for (int i = 0; i < dfa->acceptStatesCount; i++)
+        if (state == dfa->acceptStates[i]) {
+            isAcceptState = true;
             break;
         }
 
-    return isFiniteState ? NULL : dfaErrorCreate(NotFiniteState, ' ', state);
+    return isAcceptState ? NULL : dfaErrorCreate(NotAcceptState, ' ', state);
 }
 
 static DFAError* dfaMove(DFA* dfa, int* state, char token)
@@ -126,5 +126,5 @@ DFAError* dfaIsStringInAlphabet(DFA* dfa, const char* string)
         string++;
     }
 
-    return isFiniteState(dfa, currentState);
+    return isAcceptState(dfa, currentState);
 }

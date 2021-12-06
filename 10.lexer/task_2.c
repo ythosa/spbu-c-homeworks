@@ -63,6 +63,7 @@ int main()
         if (error) {
             printf("It's not a number :( ... Look at the error: ");
             dfaErrorPrint(stdout, error);
+            dfaErrorFree(error);
         } else
             printf("This is a number! :)\n");
     }

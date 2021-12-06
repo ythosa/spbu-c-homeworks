@@ -18,7 +18,7 @@ void dfaErrorPrint(FILE* outputStream, DFAError* dfaError);
 
 typedef struct DFA DFA;
 DFA* dfaCreate(
-    int transitionsCount, Transition* transitions, int finiteStatesCount, int* finiteStates, int startState);
+    int transitionsCount, Transition* transitions, int acceptStateCount, int* acceptState, int startState);
 void dfaFree(DFA* dfa);
 DFAError* dfaIsStringInAlphabet(DFA* dfa, const char* string);
 
