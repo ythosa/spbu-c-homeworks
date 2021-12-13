@@ -5,11 +5,7 @@
 #include <stdio.h>
 
 typedef bool (*TransitionFunction)(char);
-typedef struct Transition {
-    int fromState;
-    int toState;
-    TransitionFunction transitionFunction;
-} Transition;
+typedef struct Transition Transition;
 Transition transitionCreate(int fromState, int toState, TransitionFunction transitionFunction);
 
 typedef struct DFAError DFAError;
@@ -20,6 +16,6 @@ typedef struct DFA DFA;
 DFA* dfaCreate(
     int transitionsCount, Transition* transitions, int acceptStateCount, int* acceptState, int startState);
 void dfaFree(DFA* dfa);
-DFAError* dfaIsStringInAlphabet(DFA* dfa, const char* string);
+DFAError* dfaIsStringInLanguage(DFA* dfa, const char* string);
 
 #endif // SPBU_C_HOMEWORKS_DFA_H

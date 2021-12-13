@@ -47,6 +47,12 @@ void dfaErrorPrint(FILE* outputStream, DFAError* dfaError)
     }
 }
 
+struct Transition {
+    int fromState;
+    int toState;
+    TransitionFunction transitionFunction;
+};
+
 Transition transitionCreate(int fromState, int toState, TransitionFunction transitionFunction)
 {
     Transition transition = { fromState, toState, transitionFunction };
@@ -89,15 +95,11 @@ void dfaFree(DFA* dfa)
 
 static DFAError* isAcceptState(DFA* dfa, int state)
 {
-    bool isAcceptState = false;
-
     for (int i = 0; i < dfa->acceptStatesCount; i++)
-        if (state == dfa->acceptStates[i]) {
-            isAcceptState = true;
-            break;
-        }
+        if (state == dfa->acceptStates[i])
+            return NULL;
 
-    return isAcceptState ? NULL : dfaErrorCreate(NotAcceptState, ' ', state);
+    return dfaErrorCreate(NotAcceptState, ' ', state);
 }
 
 static DFAError* dfaMove(DFA* dfa, int* state, char token)
@@ -114,7 +116,7 @@ static DFAError* dfaMove(DFA* dfa, int* state, char token)
     return dfaErrorCreate(TransitionNotFound, token, *state);
 }
 
-DFAError* dfaIsStringInAlphabet(DFA* dfa, const char* string)
+DFAError* dfaIsStringInLanguage(DFA* dfa, const char* string)
 {
     int currentState = dfa->startState;
 

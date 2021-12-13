@@ -59,7 +59,7 @@ int main()
     while ((inputLineLength = getline(&inputLine, &inputBufferSize, stdin)) != -1) {
         pop(inputLine, inputLineLength);
 
-        DFAError* error = dfaIsStringInAlphabet(numbersDFA, inputLine);
+        DFAError* error = dfaIsStringInLanguage(numbersDFA, inputLine);
         if (error) {
             printf("It's not a number :( ... Look at the error: ");
             dfaErrorPrint(stdout, error);
