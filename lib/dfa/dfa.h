@@ -5,7 +5,11 @@
 #include <stdio.h>
 
 typedef bool (*TransitionFunction)(char);
-typedef struct Transition Transition;
+typedef struct Transition {
+    int fromState;
+    int toState;
+    TransitionFunction transitionFunction;
+} Transition;
 Transition transitionCreate(int fromState, int toState, TransitionFunction transitionFunction);
 
 typedef struct DFAError DFAError;

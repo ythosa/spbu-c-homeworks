@@ -47,12 +47,6 @@ void dfaErrorPrint(FILE* outputStream, DFAError* dfaError)
     }
 }
 
-struct Transition {
-    int fromState;
-    int toState;
-    TransitionFunction transitionFunction;
-};
-
 Transition transitionCreate(int fromState, int toState, TransitionFunction transitionFunction)
 {
     Transition transition = { fromState, toState, transitionFunction };
