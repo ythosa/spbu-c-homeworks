@@ -22,10 +22,10 @@ DFA* getNumbersDFA()
     transitions[tID++] = transitionCreate(1, 3, isDigit);
     transitions[tID++] = transitionCreate(1, 2, isDot);
     transitions[tID++] = transitionCreate(2, 4, isDigit);
-    transitions[tID++] = transitionCreate(2, 5, isE);
     transitions[tID++] = transitionCreate(3, 3, isDigit);
     transitions[tID++] = transitionCreate(3, 2, isDot);
     transitions[tID++] = transitionCreate(3, 5, isE);
+    transitions[tID++] = transitionCreate(4, 4, isDigit);
     transitions[tID++] = transitionCreate(4, 5, isE);
     transitions[tID++] = transitionCreate(5, 6, isPlus);
     transitions[tID++] = transitionCreate(5, 6, isMinus);
