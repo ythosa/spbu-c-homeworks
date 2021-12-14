@@ -16,17 +16,15 @@ int main(int argc, char* argv[])
 
         return 0;
     }
+    FILE* outputFile = fopen(argv[2], "w");
 
     LatinLowercaseLettersCounter* counter = createLatinLowercaseLettersCounter(inputFile);
-
-    countLatinLowercaseLetters(counter);
-    fclose(inputFile);
-
-    FILE* outputFile = fopen(argv[2], "w");
+    countLetters(counter, inputFile);
     printResult(counter, outputFile);
-    fclose(outputFile);
-
     freeLatinLowercaseLettersCounter(counter);
+    
+    fclose(inputFile);
+    fclose(outputFile);
 
     return 0;
 }

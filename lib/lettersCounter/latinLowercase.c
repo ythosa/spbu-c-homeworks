@@ -1,46 +1,44 @@
 #include "latinLowercase.h"
 
-#define a_code 97
-#define z_code 122
-#define letters_count 26
+#define LOWERCASE_A_CODE 97
+#define LOWERCASE_Z_CODE 122
+#define LATIN_LETTERS_NUMBER 26
 
 struct LatinLowercaseLettersCounter {
-    FILE* inputStream;
-    int* letters;
+    int* quantities;
 };
 
-LatinLowercaseLettersCounter* createLatinLowercaseLettersCounter(FILE* inputStream)
+LatinLowercaseLettersCounter* createLatinLowercaseLettersCounter()
 {
     LatinLowercaseLettersCounter* counter = malloc(sizeof(LatinLowercaseLettersCounter));
 
-    counter->inputStream = inputStream;
-    counter->letters = calloc(letters_count, sizeof(int));
+    counter->quantities = calloc(LATIN_LETTERS_NUMBER, sizeof(int));
 
     return counter;
 }
 
 void freeLatinLowercaseLettersCounter(LatinLowercaseLettersCounter* counter)
 {
-    free(counter->letters);
+    free(counter->quantities);
     free(counter);
 }
 
 int isLatinLowercaseLetter(int ch)
 {
-    return ch >= a_code && ch <= z_code;
+    return ch >= LOWERCASE_A_CODE && ch <= LOWERCASE_Z_CODE;
 }
 
-void countLatinLowercaseLetters(LatinLowercaseLettersCounter* counter)
+void countLetters(LatinLowercaseLettersCounter* counter, FILE* inputStream)
 {
     int readCharacter;
-    while ((readCharacter = fgetc(counter->inputStream)) != EOF)
+    while ((readCharacter = fgetc(inputStream)) != EOF)
         if (isLatinLowercaseLetter(readCharacter))
-            counter->letters[readCharacter - a_code] += 1;
+            counter->quantities[readCharacter - LOWERCASE_A_CODE] += 1;
 }
 
 void printResult(LatinLowercaseLettersCounter* counter, FILE* outputStream)
 {
-    for (int i = 0; i < letters_count; i++)
-        if (counter->letters[i])
-            fprintf(outputStream, "%c: %d\n", i + a_code, counter->letters[i]);
+    for (int i = 0; i < LATIN_LETTERS_NUMBER; i++)
+        if (counter->quantities[i])
+            fprintf(outputStream, "%c: %d\n", i + LOWERCASE_A_CODE, counter->quantities[i]);
 }
