@@ -2,33 +2,32 @@
 #include "stdlib.h"
 #include <time.h>
 
-void insertionSort(int* array, int arraySize, int step)
+void insertionSort(int* array, int arraySize, int indexStep)
 {
-    int element, position;
+    for (int i = indexStep; i < arraySize; i += indexStep) {
+        int element = array[i];
+        int position = i - indexStep;
 
-    for (int i = step; i < arraySize; i += step) {
-        element = array[i];
-        position = i - step;
         while (position >= 0 && array[position] > element) {
-            array[position + step] = array[position];
-            position = position - step;
+            array[position + indexStep] = array[position];
+            position = position - indexStep;
         }
-        array[position + step] = element;
+
+        array[position + indexStep] = element;
     }
 }
 
-void getArrayFromInput(int* array, int arraySize)
+void fillArrayFromInput(int* array, int arraySize)
 {
-    printf("Input array: \n");
     for (int i = 0; i < arraySize; i++)
         scanf("%d", &array[i]);
 }
 
-void getRandomizedArray(int* array, int arraySize)
+void fillArrayWithRandomNumbers(int* array, int arraySize, int minValue, int maxValue)
 {
-    srand(time(NULL)); // Initialization, should only be called once.
+    srand(time(NULL));
     for (int i = 0; i < arraySize; i++)
-        array[i] = rand() % 32 + 11;
+        array[i] = rand() % (maxValue - minValue + 1) + minValue;
 }
 
 void printArray(int* array, int arraySize)
@@ -45,16 +44,18 @@ int main()
     scanf("%d", &arraySize);
 
     printf("Do u want to input array numbers (Y/N): ");
-    char userInput[1] = "N";
+    char userInput[1] = "Y";
     scanf("%s", userInput);
 
     int* array = calloc(arraySize, sizeof(int));
-    if (userInput[0] == 'N') {
-        getRandomizedArray(array, arraySize);
+    if (userInput[0] == 'Y') {
+        printf("Input array: \n");
+        fillArrayFromInput(array, arraySize);
+    } else {
+        fillArrayWithRandomNumbers(array, arraySize, 11, 42);
         printf("Generated array: \n");
         printArray(array, arraySize);
-    } else
-        getArrayFromInput(array, arraySize);
+    }
 
     printf("Sorted array: \n");
     insertionSort(array, arraySize, 2);
