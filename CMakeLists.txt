@@ -23,6 +23,8 @@ add_library(io
         lib/io/csv.c
         )
 
+add_library(dfa lib/dfa/dfa.c)
+
 add_executable(task_1.1 ./1.introduction/task_1.c)
 add_executable(task_1.2 ./1.introduction/task_2.c)
 target_link_libraries(task_1.2 commonUtils)
@@ -48,7 +50,9 @@ target_link_libraries(test_1task_1 dataStructures)
 add_executable(test1_task2 ./test1/task_2.c)
 target_link_libraries(test1_task2 dataStructures)
 
-
 add_library(latinLowercaseLettersCounter lib/lettersCounter/latinLowercase.c)
 add_executable(retest1_task2 ./retest1/task_2.c)
 target_link_libraries(retest1_task2 latinLowercaseLettersCounter)
+
+add_executable(task_10.2 ./10.lexer/task_2.c)
+target_link_libraries(task_10.2 dfa)
