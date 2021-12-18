@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     countLetters(counter, inputFile);
     printResult(counter, outputFile);
     freeLatinLowercaseLettersCounter(counter);
-    
+
     fclose(inputFile);
     fclose(outputFile);
 
