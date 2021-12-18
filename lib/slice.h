@@ -6,7 +6,7 @@
 typedef void (*Destructor)(void*);
 
 typedef struct Slice Slice;
-Slice* sliceCreate(Destructor);
+Slice* sliceCreate(size_t elementSize, Destructor elementDestructor);
 void sliceFree(Slice* list);
 
 void* sliceGet(Slice* list, int index);

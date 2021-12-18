@@ -9,9 +9,10 @@ struct Slice {
     int capacity;
     int size;
     size_t elementSize;
+    Destructor elementDestructor;
 };
 
-Slice* createArrayList(size_t elementSize)
+Slice* sliceCreate(size_t elementSize, Destructor elementDestructor)
 {
     Slice* list = malloc(sizeof(Slice));
 
@@ -20,6 +21,7 @@ Slice* createArrayList(size_t elementSize)
     list->capacity = INITIAL_SIZE;
     list->size = 0;
     list->elementSize = elementSize;
+    list->elementDestructor = elementDestructor;
     list->data = malloc(INITIAL_SIZE * elementSize);
     if (!list->data) {
         free(list);
@@ -30,6 +32,8 @@ Slice* createArrayList(size_t elementSize)
 }
 void sliceFree(Slice* list)
 {
+    for (int i = 0; i < list->size; i++)
+        list->elementDestructor(list->data[i]);
     free(list->data);
     free(list);
 }

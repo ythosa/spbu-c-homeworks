@@ -5,6 +5,7 @@
 
 #include "../lib/dataStructures/dict.h"
 #include "../lib/dataStructures/list.h"
+#include "../lib/slice.h"
 #include "../lib/stack.h"
 
 typedef struct Rule {
@@ -113,9 +114,21 @@ Grammar* readGrammar(FILE* inputStream)
     return grammar;
 }
 
+Slice* tokenizeInputString(char* string)
+{
+    Slice* tokens = sliceCreate(sizeof(char*), free);
+    char* token = strtok(string, " ");
+    while (token) {
+        puts(token);
+        sliceAdd(tokens, token);
+        token = strtok(NULL, " ");
+    }
+
+    return tokens;
+}
+
 int main()
 {
-
 
     return 0;
 }
