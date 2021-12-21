@@ -52,3 +52,5 @@ target_link_libraries(test1_task2 dataStructures)
 
 add_executable(task_10.2 ./10.lexer/task_2.c)
 target_link_libraries(task_10.2 dfa)
+
+add_executable(final final/task_2.c)
