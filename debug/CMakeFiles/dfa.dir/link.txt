@@ -1,2 +1,0 @@
-/usr/bin/ar qc libdfa.a CMakeFiles/dfa.dir/lib/dfa/dfa.c.o
-/usr/bin/ranlib libdfa.a

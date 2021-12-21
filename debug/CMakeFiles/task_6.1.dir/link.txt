@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/task_6.1.dir/6.complexity_and_sorting/task_1.c.o -o task_6.1 

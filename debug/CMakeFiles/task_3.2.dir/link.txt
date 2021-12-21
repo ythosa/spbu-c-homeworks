@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/task_3.2.dir/3.pointers/task_2.c.o -o task_3.2  libdataStructures.a -lm 

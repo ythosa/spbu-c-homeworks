@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/final1.dir/final/task_1.c.o -o final1  libslice.a 

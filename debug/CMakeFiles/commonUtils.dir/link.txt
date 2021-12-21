@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcommonUtils.a CMakeFiles/commonUtils.dir/lib/commonUtils/numericOperations.c.o CMakeFiles/commonUtils.dir/lib/commonUtils/arrayOperations.c.o
-/usr/bin/ranlib libcommonUtils.a
