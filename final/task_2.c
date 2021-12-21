@@ -1,28 +1,40 @@
+#include "../lib/commonUtils/numericOperations.h"
 #include "../lib/slice.h"
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct ArrayWithMeta {
-    int* array;
-    int meta;
-} ArrayWithMeta;
-
-ArrayWithMeta** getMatrixFromSizes(int rowsCount, int colsCount)
+int** getMatrixFromSizes(int rowsCount, int colsCount)
 {
-    ArrayWithMeta** matrix = calloc(rowsCount, sizeof(ArrayWithMeta*));
-    for (int i = 0; i < colsCount; i++)
-        matrix[rowsCount] = calloc(colsCount, sizeof(ArrayWithMeta));
+    int** matrix = calloc(rowsCount, sizeof(int*));
+    for (int i = 0; i < rowsCount; i++)
+        matrix[i] = calloc(colsCount, sizeof(int));
 
     return matrix;
 }
 
-void fillMatrix(int** matrix, int rowsCount, int colsCount)
+void freeMatrix(int** matrix, int rowsCount)
+{
+    for (int i = 0; i < rowsCount; i++)
+        free(matrix[i]);
+    free(matrix);
+}
+
+void fillMatrix(int** matrix, int* rowsMins, int* colsMaxes, int rowsCount, int colsCount)
 {
     for (int i = 0; i < rowsCount; i++) {
         for (int j = 0; j < colsCount; j++) {
             scanf("%d", &matrix[i][j]);
+            colsMaxes[j] = max(colsMaxes[j], matrix[i][j]);
+            rowsMins[i] = min(rowsMins[i], matrix[i][j]);
         }
     }
+}
+
+void fillArray(int* array, int arraySize, int value)
+{
+    for (int i = 0; i < arraySize; i++)
+        array[i] = value;
 }
 
 typedef struct SaddleElement {
@@ -42,13 +54,16 @@ SaddleElement* createSaddleElement(int row, int col, int element)
     return saddleElement;
 }
 
-Slice* fillSaddleElementMatrix(int** matrix, int rowsCount, int colsCount)
+Slice* getSaddleElementsFromMatrix(int** matrix, int* rowsMins, int* colsMaxes, int rowsCount, int colsCount)
 {
-    for (int i = 0; i < rowsCount; i++) {
-        for (int j = 0; j < colsCount; j++) {
-            int maxColumn
-        }
-    }
+    Slice* saddleElements = sliceCreate(sizeof(SaddleElement*), free);
+
+    for (int i = 0; i < rowsCount; i++)
+        for (int j = 0; j < colsCount; j++)
+            if (matrix[i][j] == colsMaxes[j] && matrix[i][j] == rowsMins[i])
+                sliceAdd(saddleElements, createSaddleElement(i, j, matrix[i][j]));
+
+    return saddleElements;
 }
 
 int main()
@@ -58,5 +73,29 @@ int main()
     int colsCount = 0;
     scanf("%d %d", &rowsCount, &colsCount);
 
-    int** matrix = malloc(sizeof())
+    printf("Input matrix: \n");
+    int** matrix = getMatrixFromSizes(rowsCount, colsCount);
+
+    int* rowsMins = calloc(sizeof(int), rowsCount);
+    fillArray(rowsMins, rowsCount, INT_MAX);
+    int* colsMaxes = calloc(sizeof(int), colsCount);
+    fillArray(colsMaxes, colsCount, INT_MIN);
+
+    fillMatrix(matrix, rowsMins, colsMaxes, rowsCount, colsCount);
+
+    Slice* saddleElements = getSaddleElementsFromMatrix(matrix, rowsMins, colsMaxes, rowsCount, colsCount);
+    printf("Found saddle elements:\n");
+    int saddleElementsCount = sliceGetSize(saddleElements);
+    if (!saddleElements)
+        printf("There is no saddle elements :(\n");
+    else
+        for (int i = 0; i < saddleElementsCount; i++) {
+            SaddleElement* saddleElement = sliceGet(saddleElements, i);
+            printf("%d in (%d; %d)\n", saddleElement->element, saddleElement->row, saddleElement->col);
+        }
+
+    sliceFree(saddleElements);
+    free(colsMaxes);
+    free(rowsMins);
+    freeMatrix(matrix, rowsCount);
 }
