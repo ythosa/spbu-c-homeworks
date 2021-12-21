@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/task_1.2.dir/1.introduction/task_2.c.o -o task_1.2  libcommonUtils.a 

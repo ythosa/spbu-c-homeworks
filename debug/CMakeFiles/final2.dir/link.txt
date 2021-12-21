@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/final2.dir/final/task_2.c.o -o final2  libcommonUtils.a libslice.a 

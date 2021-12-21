@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblatinLowercaseLettersCounter.a CMakeFiles/latinLowercaseLettersCounter.dir/lib/lettersCounter/latinLowercase.c.o
-/usr/bin/ranlib liblatinLowercaseLettersCounter.a

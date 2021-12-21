@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/task_10.2.dir/10.lexer/task_2.c.o -o task_10.2  libdfa.a 

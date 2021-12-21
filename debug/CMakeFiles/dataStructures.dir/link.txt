@@ -1,2 +1,0 @@
-/usr/bin/ar qc libdataStructures.a CMakeFiles/dataStructures.dir/lib/dataStructures/string.c.o CMakeFiles/dataStructures.dir/lib/dataStructures/list.c.o CMakeFiles/dataStructures.dir/lib/dataStructures/dict.c.o CMakeFiles/dataStructures.dir/lib/dataStructures/vector.c.o
-/usr/bin/ranlib libdataStructures.a
