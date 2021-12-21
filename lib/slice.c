@@ -88,8 +88,3 @@ int sliceGetSize(Slice* list)
 {
     return list->size;
 }
-
-void sliceSort(Slice* list, Comparator comparator)
-{
-    qsort(list->data, sizeof(list->data)/sizeof(*list->data), sizeof(*list->data), comparator);
-}

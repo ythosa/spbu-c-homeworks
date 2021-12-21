@@ -15,6 +15,5 @@ void* sliceGet(Slice* list, int index);
 void* sliceSet(Slice* list, int index, void* value);
 bool sliceAdd(Slice* list, void* value);
 int sliceGetSize(Slice* list);
-void sliceSort(Slice* list, Comparator comparator);
 
 #endif // SPBU_C_HOMEWORKS_SLICE_H
