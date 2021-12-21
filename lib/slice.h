@@ -4,17 +4,16 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-typedef void (*Destructor)(void*);
-typedef int (*Comparator)(void*, void*);
+typedef int (*Comparator)(int, int);
 
 typedef struct Slice Slice;
-Slice* sliceCreate(size_t elementSize, Destructor elementDestructor);
+Slice* sliceCreate(size_t elementSize);
 void sliceFree(Slice* list);
 
-void* sliceGet(Slice* list, int index);
-void* sliceSet(Slice* list, int index, void* value);
-bool sliceAdd(Slice* list, void* value);
+int sliceGet(Slice* list, int index);
+bool sliceSet(Slice* list, int index, int value);
+bool sliceAdd(Slice* list, int value);
 int sliceGetSize(Slice* list);
-void sliceSort(Slice* list, Comparator comparator);
+void sliceSort(Slice* list);
 
 #endif // SPBU_C_HOMEWORKS_SLICE_H

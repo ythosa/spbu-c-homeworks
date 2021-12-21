@@ -1,19 +1,18 @@
 #include "slice.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #define INITIAL_SIZE 16
 
 struct Slice {
-    void** data;
+    int* data;
     int capacity;
     int size;
-    size_t elementSize;
-    Destructor elementDestructor;
 };
 
-Slice* sliceCreate(size_t elementSize, Destructor elementDestructor)
+Slice* sliceCreate(size_t elementSize)
 {
     Slice* list = malloc(sizeof(Slice));
 
@@ -21,8 +20,6 @@ Slice* sliceCreate(size_t elementSize, Destructor elementDestructor)
         return NULL;
     list->capacity = INITIAL_SIZE;
     list->size = 0;
-    list->elementSize = elementSize;
-    list->elementDestructor = elementDestructor;
     list->data = malloc(INITIAL_SIZE * elementSize);
     if (!list->data) {
         free(list);
@@ -33,15 +30,13 @@ Slice* sliceCreate(size_t elementSize, Destructor elementDestructor)
 }
 void sliceFree(Slice* list)
 {
-    for (int i = 0; i < list->size; i++)
-        list->elementDestructor(list->data[i]);
     free(list->data);
     free(list);
 }
 
 bool increaseCapacity(Slice* list)
 {
-    void* buffer = realloc(list->data, 2 * list->capacity * sizeof(list->elementSize));
+    int buffer = realloc(list->data, 2 * list->capacity * sizeof(int));
     if (buffer) {
         list->capacity *= 2;
         list->data = buffer;
@@ -50,14 +45,14 @@ bool increaseCapacity(Slice* list)
     return buffer;
 }
 
-void* sliceGet(Slice* list, int index)
+int sliceGet(Slice* list, int index)
 {
-    if (index < 0 || index >= list->size)
-        return NULL;
+    assert(index >= 0 && index < list->size);
+
     return list->data[index];
 }
 
-void* sliceSet(Slice* list, int index, void* value)
+bool sliceSet(Slice* list, int index, int value)
 {
     if (index < 0 || index > list->size)
         return false;
@@ -68,13 +63,13 @@ void* sliceSet(Slice* list, int index, void* value)
         return NULL;
     }
 
-    void* previousValue = list->data[index];
+    int previousValue = list->data[index];
     list->data[index] = value;
 
     return previousValue;
 }
 
-bool sliceAdd(Slice* list, void* value)
+bool sliceAdd(Slice* list, int value)
 {
     if (list->size == list->capacity && !increaseCapacity(list)) {
         return false;
@@ -89,7 +84,12 @@ int sliceGetSize(Slice* list)
     return list->size;
 }
 
-void sliceSort(Slice* list, Comparator comparator)
+int compareInt(const void* first, const void* second)
 {
-    qsort(list->data, sizeof(list->data)/sizeof(*list->data), sizeof(*list->data), comparator);
+    return *(int*)first - *(int*)second;
+}
+
+void sliceSort(Slice* list)
+{
+    qsort(list->data, list->size, sizeof(int), compareInt);
 }

@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ythosa/Projects/spbu-c-homeworks/final/task_1.c
+../lib/slice.h
+/home/ythosa/Projects/spbu-c-homeworks/lib/slice.h
+stdio.h
+-
+
+/home/ythosa/Projects/spbu-c-homeworks/lib/slice.h
+stdbool.h
+-
+stdlib.h
+-
+

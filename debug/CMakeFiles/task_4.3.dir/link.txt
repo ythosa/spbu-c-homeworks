@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/task_4.3.dir/4.data_presentation/task_3.c.o -o task_4.3  libbinary_lib.a 
