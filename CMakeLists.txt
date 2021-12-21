@@ -16,7 +16,7 @@ set(DATA_STRUCTURES_SOURCE_LIB
         )
 add_library(dataStructures ${DATA_STRUCTURES_SOURCE_LIB})
 target_link_libraries(dataStructures m)
-        
+
 add_library(binary_lib lib/binary.c)
 
 add_library(io
@@ -50,9 +50,15 @@ target_link_libraries(test_1task_1 dataStructures)
 add_executable(test1_task2 ./test1/task_2.c)
 target_link_libraries(test1_task2 dataStructures)
 
+add_library(latinLowercaseLettersCounter lib/lettersCounter/latinLowercase.c)
+add_executable(retest1_task2 ./retest1/task_2.c)
+target_link_libraries(retest1_task2 latinLowercaseLettersCounter)
+
 add_executable(task_10.2 ./10.lexer/task_2.c)
 target_link_libraries(task_10.2 dfa)
 
 add_library(slice ./lib/slice.c)
 add_executable(final1 ./final/task_1.c)
 target_link_libraries(final1 slice)
+add_executable(retest1_task3 ./retest1/task_3.c)
+target_link_libraries(retest1_task3 dataStructures)
