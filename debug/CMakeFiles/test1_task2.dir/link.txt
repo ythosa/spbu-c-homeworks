@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/test1_task2.dir/test1/task_2.c.o -o test1_task2  libdataStructures.a -lm 

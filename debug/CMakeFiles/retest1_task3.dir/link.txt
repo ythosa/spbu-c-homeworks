@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/retest1_task3.dir/retest1/task_3.c.o -o retest1_task3  libdataStructures.a -lm 

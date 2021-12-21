@@ -1,0 +1,2 @@
+/usr/bin/ar qc libslice.a CMakeFiles/slice.dir/lib/slice.c.o
+/usr/bin/ranlib libslice.a
