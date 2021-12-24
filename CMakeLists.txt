@@ -68,4 +68,4 @@ target_link_libraries(final3 dataStructures)
 add_executable(retest1_task3 ./retest1/task_3.c)
 target_link_libraries(retest1_task3 dataStructures)
 
-add_executable(final2.second_1 ./final2/second_1.c)
+add_executable(final2.second_1 final2/test2_1.c)
