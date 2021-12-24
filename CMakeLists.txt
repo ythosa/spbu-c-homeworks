@@ -14,10 +14,18 @@ set(DATA_STRUCTURES_SOURCE_LIB
         lib/dataStructures/dict.c
         lib/dataStructures/vector.c
         )
+add_library(values lib/values/values.c)
+
+add_library(stack lib/stack/stack.c)
+target_link_libraries(stack values)
+
+add_library(treemap lib/treemap/treemap.c)
+target_link_libraries(treemap values stack commonUtils)
+add_library(binary_lib lib/binary.c)
+
+set(DATA_STRUCTURES_SOURCE_LIB lib/dataStructures/vector.c)
 add_library(dataStructures ${DATA_STRUCTURES_SOURCE_LIB})
 target_link_libraries(dataStructures m)
-        
-add_library(binary_lib lib/binary.c)
 
 add_library(io
         lib/io/csv.c
@@ -52,3 +60,9 @@ target_link_libraries(test1_task2 dataStructures)
 
 add_executable(task_10.2 ./10.lexer/task_2.c)
 target_link_libraries(task_10.2 dfa)
+
+add_executable(task_7.1 ./7.searchTrees/task_1.c)
+target_link_libraries(task_7.1 treemap)
+
+add_executable(final2.final1 ./final2/final_1.c)
+target_link_libraries(final2.final1 treemap)
