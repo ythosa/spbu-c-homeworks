@@ -1,13 +1,13 @@
 #include "vector.h"
 
 typedef struct Node {
-    struct node_t* next;
+    struct Node* next;
     int data;
-} node_t;
+} Node;
 
-node_t* nodeCreate(node_t* next, int data)
+Node* nodeCreate(Node* next, int data)
 {
-    node_t* node = malloc(sizeof(node_t));
+    Node* node = malloc(sizeof(Node));
 
     node->next = next;
     node->data = data;
@@ -15,15 +15,15 @@ node_t* nodeCreate(node_t* next, int data)
     return node;
 }
 
-void nodeFree(node_t* node)
+void nodeFree(Node* node)
 {
     free(node);
 }
 
 struct Vector {
     int size;
-    node_t* head;
-    node_t* tail;
+    Node* head;
+    Node* tail;
 };
 
 Vector* vectorCreate()
@@ -39,8 +39,8 @@ Vector* vectorCreate()
 
 void vectorFree(Vector* vector)
 {
-    node_t* next = NULL;
-    for (node_t* node = vector->head; node; node = next) {
+    Node* next = NULL;
+    for (Node* node = vector->head; node; node = next) {
         next = node->next;
         nodeFree(node);
     }
@@ -64,7 +64,7 @@ void vectorPushback(Vector* vector, int data)
         return;
     }
 
-    node_t* newNode = nodeCreate(NULL, data);
+    Node* newNode = nodeCreate(NULL, data);
 
     if (!vector->tail) {
         vector->tail = newNode;
@@ -79,7 +79,7 @@ void vectorPushback(Vector* vector, int data)
 
 void vectorPrint(Vector* vector, FILE* destination)
 {
-    node_t* currentNode = vector->head;
+    Node* currentNode = vector->head;
     while (currentNode) {
         fprintf(destination, "%d ", currentNode->data);
         currentNode = currentNode->next;
@@ -90,7 +90,7 @@ double vectorLength(Vector* vector)
 {
     int squaresSum = 0;
 
-    node_t* currentNode = vector->head;
+    Node* currentNode = vector->head;
     while (currentNode) {
         squaresSum += currentNode->data * currentNode->data;
         currentNode = currentNode->next;
@@ -105,8 +105,8 @@ Vector* vectorPlus(Vector* leftOperand, Vector* rightOperand)
         return NULL;
 
     Vector* result = vectorCreate();
-    node_t* currentLeftOperandNode = leftOperand->head;
-    node_t* currentRightOperandNode = rightOperand->head;
+    Node* currentLeftOperandNode = leftOperand->head;
+    Node* currentRightOperandNode = rightOperand->head;
     for (int i = 0; i < leftOperand->size; i++) {
         vectorPushback(result, currentLeftOperandNode->data + currentRightOperandNode->data);
         currentRightOperandNode = currentLeftOperandNode->next;
@@ -123,8 +123,8 @@ Vector* vectorMinus(Vector* leftOperand, Vector* rightOperand)
 
     Vector* result = vectorCreate();
 
-    node_t* currentLeftOperandNode = leftOperand->head;
-    node_t* currentRightOperandNode = rightOperand->head;
+    Node* currentLeftOperandNode = leftOperand->head;
+    Node* currentRightOperandNode = rightOperand->head;
     for (int i = 0; i < leftOperand->size; i++) {
         vectorPushback(result, currentLeftOperandNode->data - currentRightOperandNode->data);
         currentLeftOperandNode = currentLeftOperandNode->next;
@@ -139,8 +139,8 @@ bool vectorDotProduct(int* result, Vector* leftOperand, Vector* rightOperand)
     if (leftOperand->size != rightOperand->size)
         return false;
 
-    node_t* currentLeftOperandNode = leftOperand->head;
-    node_t* currentRightOperandNode = rightOperand->head;
+    Node* currentLeftOperandNode = leftOperand->head;
+    Node* currentRightOperandNode = rightOperand->head;
     for (int i = 0; i < leftOperand->size; i++) {
         *result += currentLeftOperandNode->data * currentRightOperandNode->data;
         currentLeftOperandNode = currentLeftOperandNode->next;

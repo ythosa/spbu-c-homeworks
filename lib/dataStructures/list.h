@@ -38,7 +38,7 @@ int listSubsequenceIndex(List list, List subsequence, bool (*compareNodeData)(vo
 /* Deletes nodes from List. Starts from `fromIndex` ends `toIndex` (not include). */
 bool listDeleteNodes(List list, int fromIndex, int toIndex);
 
-/* Inserts List into List position. Need to provide a function that copies node_t data. */
+/* Inserts List into List position. Need to provide a function that copies Node data. */
 bool listInsertSequence(List list, List sequence, int position, void* (*copyNodeData)(void*));
 
 /* Deletes from List subsequence that starts from `fromSequence` and ends `toSequence`. */
