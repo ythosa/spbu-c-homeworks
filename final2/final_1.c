@@ -13,7 +13,7 @@ void readWordsFromFileToTreeMap(FILE* inputStream, TreeMap* map)
         if (!treeMapHasKey(map, wrapString(wordBuffer))) {
             char* word = calloc(strlen(wordBuffer) + 1, sizeof(char));
             strcpy(word, wordBuffer);
-            treeMapPut(map, wrapString(word), wrapNone());
+            treeMapPut(map, wrapString(word), wrapInt(true));
         }
     }
 }
