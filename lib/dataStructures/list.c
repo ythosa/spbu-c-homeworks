@@ -7,7 +7,7 @@
 #include "list.h"
 
 typedef struct Node {
-    struct node_t* next;
+    struct Node* next;
     void* data;
 } node_t;
 
@@ -35,8 +35,8 @@ node_t* nodeCopy(node_t* node, void* (*copyNodeData)(void*))
 }
 
 typedef struct List {
-    struct node_t* head;
-    struct node_t* tail;
+    struct Node* head;
+    struct Node* tail;
     int size;
     void (*freeNodeData)(void*);
 } list_t;
@@ -91,6 +91,18 @@ void listPushback(List list, void* data)
     else
         list->head = newNode;
     list->tail = newNode;
+
+    list->size++;
+}
+
+void listUnshift(List list, void* data)
+{
+    node_t* newNode = nodeCreate(NULL, data);
+    if (list->head)
+        newNode->next = list->head;
+    else
+        list->tail = newNode;
+    list->head = newNode;
 
     list->size++;
 }
