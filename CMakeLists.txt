@@ -41,3 +41,6 @@ target_link_libraries(test1_task2 dataStructures)
 
 add_executable(task_7.1 ./7.searchTrees/task_1.c)
 target_link_libraries(task_7.1 treemap)
+
+add_executable(final2.final_1 ./final2/final_1.c)
+target_link_libraries(final2.final_1 treemap)
