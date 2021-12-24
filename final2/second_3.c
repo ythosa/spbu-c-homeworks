@@ -1,7 +1,7 @@
 #include "../lib/doublyLinkedList/doubly_linked_list.h"
 #include "stdio.h"
 
-void readNumberFromFileToList(FILE* inputStream, List list)
+void readNumbersFromFileToList(FILE* inputStream, List list)
 {
     int inputNumber = 0;
     while (fscanf(inputStream, "%d", &inputNumber) != EOF)
@@ -16,10 +16,15 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    List list = listCreate();
-
     FILE* inputFile = fopen(argv[1], "r");
-    readNumberFromFileToList(inputFile, list);
+    if (!inputFile) {
+        printf("Invalid input file path!\n");
+
+        return 0;
+    }
+
+    List list = listCreate();
+    readNumbersFromFileToList(inputFile, list);
     fclose(inputFile);
 
     if (listIsSymmetric(list))
