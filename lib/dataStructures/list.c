@@ -95,18 +95,6 @@ void listPushback(List list, void* data)
     list->size++;
 }
 
-void listUnshift(List list, void* data)
-{
-    node_t* newNode = nodeCreate(NULL, data);
-    if (list->head)
-        newNode->next = list->head;
-    else
-        list->tail = newNode;
-    list->head = newNode;
-
-    list->size++;
-}
-
 String listToString(List list, char (*convertElementToChar)(void*))
 {
     char* resultBuffer = calloc(sizeof(char), list->size + 1);
