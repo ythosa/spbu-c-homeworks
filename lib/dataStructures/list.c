@@ -9,24 +9,24 @@
 typedef struct Node {
     struct Node* next;
     void* data;
-} node_t;
+} Node;
 
-node_t* nodeCreate(node_t* next, void* data)
+Node* nodeCreate(Node* next, void* data)
 {
-    node_t* node = malloc(sizeof(node_t));
+    Node* node = malloc(sizeof(Node));
     node->next = next;
     node->data = data;
 
     return node;
 }
 
-void nodeFree(node_t* node, void (*freeNodeData)(void*))
+void nodeFree(Node* node, void (*freeNodeData)(void*))
 {
     freeNodeData(node->data);
     free(node);
 }
 
-node_t* nodeCopy(node_t* node, void* (*copyNodeData)(void*))
+Node* nodeCopy(Node* node, void* (*copyNodeData)(void*))
 {
     if (!node)
         return NULL;
@@ -55,8 +55,8 @@ List listCreate(void (*freeNodeData)(void*))
 
 void listFree(List list)
 {
-    node_t* next = NULL;
-    for (node_t* node = list->head; node; node = next) {
+    Node* next = NULL;
+    for (Node* node = list->head; node; node = next) {
         next = node->next;
         nodeFree(node, list->freeNodeData);
     }
@@ -75,7 +75,7 @@ List listCopy(List list, void* (*copyNodeData)(void*))
     copy->size = list->size;
     copy->head = nodeCopy(list->head, copyNodeData);
 
-    node_t* currentNode = copy->head;
+    Node* currentNode = copy->head;
     while (currentNode->next)
         currentNode = currentNode->next;
     copy->tail = currentNode;
@@ -85,7 +85,7 @@ List listCopy(List list, void* (*copyNodeData)(void*))
 
 void listPushback(List list, void* data)
 {
-    node_t* newNode = nodeCreate(NULL, data);
+    Node* newNode = nodeCreate(NULL, data);
     if (list->tail)
         list->tail->next = newNode;
     else
@@ -99,7 +99,7 @@ String listToString(List list, char (*convertElementToChar)(void*))
 {
     char* resultBuffer = calloc(sizeof(char), list->size + 1);
 
-    node_t* currentNode = list->head;
+    Node* currentNode = list->head;
     int i = 0;
     while (currentNode) {
         resultBuffer[i] = convertElementToChar(currentNode->data);
@@ -116,7 +116,7 @@ String listToString(List list, char (*convertElementToChar)(void*))
 
 void listPrint(List list, String (*formatElementData)(void*), String separator, FILE* destination)
 {
-    node_t* currentNode = list->head;
+    Node* currentNode = list->head;
     while (currentNode) {
         String s = formatElementData(currentNode->data);
         stringPrint(s, destination);
@@ -134,12 +134,12 @@ bool isValidListIndex(List list, int index)
     return index >= 0 && index < list->size;
 }
 
-node_t* listGet(List list, int position)
+Node* listGet(List list, int position)
 {
     if (!isValidListIndex(list, position))
         return NULL;
 
-    node_t* node = list->head;
+    Node* node = list->head;
     for (int i = 0; i < position; i++)
         node = node->next;
 
@@ -151,12 +151,12 @@ int listSubsequenceIndexFromIndex(List list, int fromIndex, List subsequence, bo
     if (subsequence->size > list->size || !isValidListIndex(list, fromIndex))
         return -1;
 
-    node_t* listCurrentNode = listGet(list, fromIndex);
+    Node* listCurrentNode = listGet(list, fromIndex);
     int i = fromIndex;
     while (listCurrentNode) {
         bool isFound = true;
-        node_t* subsequenceCurrentNode = subsequence->head;
-        node_t* listCurrentNodeCopy = listCurrentNode;
+        Node* subsequenceCurrentNode = subsequence->head;
+        Node* listCurrentNodeCopy = listCurrentNode;
         while (subsequenceCurrentNode && listCurrentNodeCopy) {
             if (!compareNodeData(listCurrentNodeCopy->data, subsequenceCurrentNode->data)) {
                 isFound = false;
@@ -196,9 +196,9 @@ bool listDeleteNodes(List list, int fromIndex, int toIndex)
         return false;
     }
 
-    node_t* beforeFromNode = fromIndex > 0 ? listGet(list, fromIndex - 1) : NULL;
-    node_t* nextNode = NULL;
-    node_t* currentNode = beforeFromNode ? beforeFromNode->next : list->head;
+    Node* beforeFromNode = fromIndex > 0 ? listGet(list, fromIndex - 1) : NULL;
+    Node* nextNode = NULL;
+    Node* currentNode = beforeFromNode ? beforeFromNode->next : list->head;
     for (int i = fromIndex; i < toIndex; i++) {
         nextNode = currentNode->next;
         nodeFree(currentNode, list->freeNodeData);
@@ -239,7 +239,7 @@ bool listInsertSequence(List list, List sequence, int position, void* (*copyNode
         list->tail->next = sequenceCopy->head;
         list->tail = sequenceCopy->tail;
     } else {
-        node_t* nodeBefore = listGet(list, position - 1);
+        Node* nodeBefore = listGet(list, position - 1);
         sequenceCopy->tail->next = nodeBefore->next;
         nodeBefore->next = sequenceCopy->head;
     }
@@ -305,7 +305,7 @@ bool listReplaceSequence(
 
 typedef struct ListIterator {
     List list;
-    node_t* currentNode;
+    Node* currentNode;
 } listIterator_t;
 
 ListIterator listIteratorCreate(List list)
