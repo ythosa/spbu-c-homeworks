@@ -7,14 +7,14 @@
 #include "doubly_linked_list.h"
 
 typedef struct Node {
-    struct node_t* next;
-    struct node_t* previous;
+    struct Node* next;
+    struct Node* previous;
     int data;
 } Node;
 
-node_t* nodeCreate(int data)
+Node* nodeCreate(int data)
 {
-    node_t* node = malloc(sizeof(node_t));
+    Node* node = malloc(sizeof(Node));
 
     node->data = data;
     node->next = NULL;
@@ -23,14 +23,14 @@ node_t* nodeCreate(int data)
     return node;
 }
 
-void nodeFree(node_t* node)
+void nodeFree(Node* node)
 {
     free(node);
 }
 
 typedef struct List {
-    struct node_t* head;
-    struct node_t* tail;
+    struct Node* head;
+    struct Node* tail;
     int size;
 } list_t;
 
@@ -47,8 +47,8 @@ List listCreate()
 
 void listFree(List list)
 {
-    node_t* next = NULL;
-    for (node_t* node = list->head; node; node = next) {
+    Node* next = NULL;
+    for (Node* node = list->head; node; node = next) {
         next = node->next;
         nodeFree(node);
     }
@@ -63,7 +63,7 @@ int listSize(List list)
 
 void listPushback(List list, int data)
 {
-    node_t* newNode = nodeCreate(data);
+    Node* newNode = nodeCreate(data);
 
     if (list->tail) {
         list->tail->next = newNode;
@@ -77,8 +77,8 @@ void listPushback(List list, int data)
 
 bool listIsSymmetric(List list)
 {
-    node_t* left = list->head;
-    node_t* right = list->tail;
+    Node* left = list->head;
+    Node* right = list->tail;
 
     while (left != right) {
         if (left->data != right->data)
