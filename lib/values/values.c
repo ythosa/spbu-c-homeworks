@@ -86,6 +86,14 @@ static int comparePointer(void* firstPointer, void* secondPointer)
     return first < second ? -1 : (first > second ? 1 : 0);
 }
 
+static int compareString(char* first, char* second)
+{
+    int compareResult = strcmp(first, second);
+
+    return compareResult > 0 ? 1 : compareResult < 0 ? -1
+                                                     : 0;
+}
+
 bool equals(Value first, Value second)
 {
     return compare(first, second) == 0;
@@ -101,7 +109,7 @@ int compare(Value first, Value second)
     case DOUBLE_TYPE:
         return compareDouble(first.doubleValue, second.doubleValue);
     case STRING_TYPE:
-        return strcmp(first.stringValue, second.stringValue);
+        return compareString(first.stringValue, second.stringValue);
     case POINTER_TYPE:
         return comparePointer(first.pointerValue, second.pointerValue);
     case NONE_TYPE:
