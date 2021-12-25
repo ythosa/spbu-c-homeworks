@@ -59,6 +59,11 @@ target_link_libraries(retest1_task2 latinLowercaseLettersCounter)
 add_executable(task_10.2 ./10.lexer/task_2.c)
 target_link_libraries(task_10.2 dfa)
 
+add_library(doublyLinkedList lib/doublyLinkedList/doubly_linked_list.c)
+
+add_executable(final2.second_3 final2/test2_3.c)
+target_link_libraries(final2.second_3 doublyLinkedList)
+
 add_executable(final2 final/task_2.c)
 target_link_libraries(final2 commonUtils slice)
 
