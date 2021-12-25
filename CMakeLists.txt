@@ -16,7 +16,7 @@ set(DATA_STRUCTURES_SOURCE_LIB
         )
 add_library(dataStructures ${DATA_STRUCTURES_SOURCE_LIB})
 target_link_libraries(dataStructures m)
-        
+
 add_library(binary_lib lib/binary.c)
 
 add_library(io
@@ -24,6 +24,10 @@ add_library(io
         )
 
 add_library(mergeSort lib/mergeSort/mergeSort.c)
+
+add_library(dfa lib/dfa/dfa.c)
+
+add_library(slice ./lib/slice.c)
 
 add_executable(task_1.1 ./1.introduction/task_1.c)
 add_executable(task_1.2 ./1.introduction/task_2.c)
@@ -52,3 +56,27 @@ target_link_libraries(test1_task2 dataStructures)
 
 add_executable(task_6.1 ./6.complexity_and_sorting/task_1.c)
 target_link_libraries(task_6.1 mergeSort)
+
+add_library(latinLowercaseLettersCounter lib/lettersCounter/latinLowercase.c)
+add_executable(retest1_task2 ./retest1/task_2.c)
+target_link_libraries(retest1_task2 latinLowercaseLettersCounter)
+
+add_executable(task_10.2 ./10.lexer/task_2.c)
+target_link_libraries(task_10.2 dfa)
+
+add_library(doublyLinkedList lib/doublyLinkedList/doubly_linked_list.c)
+
+add_executable(final2.second_3 final2/test2_3.c)
+target_link_libraries(final2.second_3 doublyLinkedList)
+
+add_executable(final2 final/task_2.c)
+target_link_libraries(final2 commonUtils slice)
+
+add_executable(final3 ./final/task_3.c)
+target_link_libraries(final3 dataStructures)
+
+add_executable(retest1_task3 ./retest1/task_3.c)
+target_link_libraries(retest1_task3 dataStructures)
+
+add_executable(final2.second_1 final2/test2_1.c)
+
