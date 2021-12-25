@@ -23,6 +23,8 @@ add_library(io
         lib/io/csv.c
         )
 
+add_library(mergeSort lib/mergeSort/mergeSort.c)
+
 add_library(dfa lib/dfa/dfa.c)
 
 add_library(slice ./lib/slice.c)
@@ -52,6 +54,9 @@ target_link_libraries(test_1task_1 dataStructures)
 add_executable(test1_task2 ./test1/task_2.c)
 target_link_libraries(test1_task2 dataStructures)
 
+add_executable(task_6.1 ./6.complexity_and_sorting/task_1.c)
+target_link_libraries(task_6.1 mergeSort)
+
 add_library(latinLowercaseLettersCounter lib/lettersCounter/latinLowercase.c)
 add_executable(retest1_task2 ./retest1/task_2.c)
 target_link_libraries(retest1_task2 latinLowercaseLettersCounter)
@@ -74,3 +79,4 @@ add_executable(retest1_task3 ./retest1/task_3.c)
 target_link_libraries(retest1_task3 dataStructures)
 
 add_executable(final2.second_1 final2/test2_1.c)
+
